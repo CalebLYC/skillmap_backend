@@ -21,9 +21,28 @@ class UserRepository:
             return UserModel(**doc)
         return None
 
-    async def list_users(self, skip: int = 0, limit: int = 100) -> List[UserModel]:
-        cursor = self.collection.find().skip(skip).limit(limit)
-        docs = await cursor.to_list(length=limit)
+    async def find_by_phone_number(self, phone_number: str) -> Optional[UserModel]:
+        doc = await self.collection.find_one({"phone_number": phone_number})
+        if doc:
+            return UserModel(**doc)
+        return None
+
+    async def list_users(
+        self, skip: int = 0, limit: Optional[int] = 100, all: bool = False
+    ) -> List[UserModel]:
+        # Si all est True, ignorer la pagination
+        if all:
+            cursor = self.collection.find()
+        else:
+            # Vérifiez que skip et limit sont valides
+            if skip < 0:
+                skip = 0
+            if limit <= 0:
+                limit = 100  # Valeur par défaut si limit est invalides
+
+            cursor = self.collection.find().skip(skip).limit(limit)
+
+        docs = await cursor.to_list(length=limit if not all else None)
         return [UserModel(**doc) for doc in docs]
 
     async def create(self, user: UserModel) -> str:

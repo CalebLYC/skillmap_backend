@@ -1,19 +1,14 @@
 from typing import Optional, List
-from app.db.user_repository import UserRepository
+from app.core.security import SecurityUtils
+from app.db.repositories.user_repository import UserRepository
 from app.models.user import UserModel
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from fastapi import HTTPException
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserService:
     def __init__(self, user_repo: UserRepository):
         self.user_repo = user_repo
-
-    def _hash_password(self, password: str) -> str:
-        return pwd_context.hash(password)
 
     async def get_user(self, user_id: str) -> Optional[UserReadSchema]:
         user = await self.user_repo.find_by_id(user_id)
@@ -27,8 +22,10 @@ class UserService:
             return UserReadSchema.model_validate(user)
         return None
 
-    async def list_users(self, skip: int = 0, limit: int = 100) -> List[UserReadSchema]:
-        users = await self.user_repo.list_users(skip, limit)
+    async def list_users(
+        self, skip: int = 0, limit: int = 100, all: bool = False
+    ) -> List[UserReadSchema]:
+        users = await self.user_repo.list_users(skip=skip, limit=limit, all=all)
         return [UserReadSchema.model_validate(u) for u in users]
 
     async def create_user(self, user_create: UserCreateSchema) -> UserReadSchema:
@@ -36,11 +33,9 @@ class UserService:
         if existing:
             raise HTTPException(status_code=400, detail="Email already registered")
 
-        hashed_pw = self._hash_password(user_create.password)
+        hashed_pw = SecurityUtils.hash_password(user_create.password)
         user_model = UserModel(
-            email=user_create.email,
-            hashed_password=hashed_pw,
-            full_name=user_create.full_name,
+            **user_create.model_dump(exclude=["password"]), password=hashed_pw
         )
         user_id = await self.user_repo.create(user_model)
         created = await self.user_repo.find_by_id(user_id)
@@ -60,7 +55,7 @@ class UserService:
                 raise HTTPException(status_code=400, detail="Email already registered")
 
         if "password" in update_data:
-            update_data["hashed_password"] = self._hash_password(
+            update_data["hashed_password"] = SecurityUtils.hash_password(
                 update_data.pop("password")
             )
 

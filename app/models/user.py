@@ -15,8 +15,10 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 class UserModel(BaseModel):
     id: PyObjectId = Field(default_factory=lambda: str(ObjectId()), alias="_id")
     email: EmailStr = Field(...)
-    hashed_password: str = Field(...)
-    full_name: Optional[str] = Field(default=None)
+    password: str = Field(...)
+    first_name: str = Field(...)
+    last_name: str = Field(...)
+    phone_number: Optional[str] = Field(default=None)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -26,10 +28,12 @@ class UserModel(BaseModel):
         json_encoders={ObjectId: str},
         json_schema_extra={
             "example": {
+                "id": "685f420bf748b6ad4f8317b5",
                 "email": "jdoe@example.com",
-                "name": "Doe",
-                "firstname": "John",
+                "last_name": "Doe",
+                "first_name": "John",
                 "password": "12345678",
+                "phone_number": "90000000",
             }
         },
     )

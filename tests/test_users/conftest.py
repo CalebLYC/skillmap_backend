@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from app.core.providers import get_db
-from app.db.user_repository import UserRepository
+from app.db.repositories.user_repository import UserRepository
 from app.main import app
 from app.services.auth.user_service import UserService
 from tests.common.fake_db import FakeDB

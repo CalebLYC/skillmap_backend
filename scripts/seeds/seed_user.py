@@ -3,7 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import Settings
 from app.db.mongo_collections import DBCollections
 from app.schemas.user import UserCreateSchema
-from app.db.user_repository import UserRepository
+from app.db.repositories.user_repository import UserRepository
 from app.services.auth.user_service import UserService
 
 
@@ -23,15 +23,20 @@ async def seed_users():
         UserCreateSchema(
             email="alice@example.com",
             password="password123",
-            full_name="Alice Wonderland",
+            first_name="Alice",
+            last_name="Wonderland",
         ),
         UserCreateSchema(
-            email="bob@example.com", password="password123", full_name="Bob Builder"
+            email="bob@example.com",
+            password="password123",
+            first_name="Bob",
+            last_name="Builder",
         ),
         UserCreateSchema(
             email="charlie@example.com",
             password="password123",
-            full_name="Charlie Chocolate",
+            first_name="Charlie",
+            last_name="Chocolate",
         ),
     ]
 

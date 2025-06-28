@@ -1,11 +1,20 @@
 from fastapi import APIRouter, Depends, Query, Path
 from typing import List
 from app.core.providers import get_db
-from app.db.user_repository import UserRepository
+from app.db.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+    dependencies=[],
+    responses={
+        404: {"description": "Not found"},
+        401: {"description": "Not authenticated"},
+        403: {"description": "Forbidden"},
+    },
+)
 
 
 def get_user_service(db=Depends(get_db)) -> UserService:
@@ -17,9 +26,10 @@ def get_user_service(db=Depends(get_db)) -> UserService:
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
+    all: bool = Query(default=False),
     service: UserService = Depends(get_user_service),
 ):
-    return await service.list_users(skip=skip, limit=limit)
+    return await service.list_users(skip=skip, limit=limit, all=all)
 
 
 @router.get("/{user_id}", response_model=UserReadSchema, summary="Get a user by ID")
