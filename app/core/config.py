@@ -1,24 +1,32 @@
-from pydantic import BaseSettings, Field
+from pydantic import ConfigDict, Field
 from functools import lru_cache
 import os
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    environment: str = Field(..., env="ENV")
+    environment: str = Field(..., alias="ENV")
 
     # fallback généraux
-    default_db_uri: str = Field(..., env="DATABASE_URI")
-    default_db_name: str = Field(..., env="DB_NAME")
+    default_db_uri: str = Field(
+        ..., json_schema_extra={"env": "DATABASE_URI"}, alias="DATABASE_URI"
+    )
+    default_db_name: str = Field(..., alias="DB_NAME")
 
-    jwt_algorithm: str = Field(..., env="JWT_SECRET_KEY")
-    jwt_secret_key: str = Field(..., env="JWT_SECRET_KEY")
-    access_token_expire_weeks: int = Field(..., env="ACCESS_TOKEN_EXPIRE_WEEKS")
+    jwt_algorithm: str = Field(..., alias="JWT_ALGORITHM")
+    jwt_secret_key: str = Field(..., alias="JWT_SECRET_KEY")
+    access_token_expire_weeks: int = Field(..., alias="ACCESS_TOKEN_EXPIRE_WEEKS")
 
-    admin_email: str = Field(..., env="ADMINEMAIL")
-    admin_password: str = Field(..., env="ADMINPASSWORD")
+    admin_email: str = Field(..., alias="ADMINEMAIL")
+    admin_password: str = Field(..., alias="ADMINPASSWORD")
 
-    class Config:
-        case_sensitive = True
+    model_config = ConfigDict(
+        case_sensitive=True,
+        env_file=".env",
+        env_file_encoding="utf-8",
+        validate_by_name=True,
+        extra="allow",
+    )
 
     @property
     def database_uri(self) -> str:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.controllers.auth import auth_controller
+from app.controllers.auth import auth_controller, user_controller
 
 
 # Application Fastapi
@@ -24,6 +24,7 @@ app.add_middleware(
 
 # Ajout des controllers/routers
 app.include_router(auth_controller.router)
+app.include_router(user_controller.router)
 
 
 # Endpoint racine

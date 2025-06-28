@@ -1,40 +1,35 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from pydantic import BaseModel, BeforeValidator, ConfigDict, EmailStr, Field
+from typing import Annotated, Optional
 from bson import ObjectId
 
 
-class PyObjectId(ObjectId):
-
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+def validate_object_id(v: str) -> str:
+    if not ObjectId.is_valid(v):
+        raise ValueError(f"Invalid ObjectId: {v}")
+    return v
 
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    full_name: Optional[str] = None
+PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
-class UserUpdate(BaseModel):
-    email: Optional[EmailStr]
-    full_name: Optional[str]
+class UserModel(BaseModel):
+    id: PyObjectId = Field(default_factory=lambda: str(ObjectId()), alias="_id")
+    email: EmailStr = Field(...)
+    hashed_password: str = Field(...)
+    full_name: Optional[str] = Field(default=None)
 
-
-class UserInDB(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    email: EmailStr
-    full_name: Optional[str] = None
-
-    class Config:
-        allow_population_by_field_name = True
-        json_encoders = {ObjectId: str}
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_encoders={ObjectId: str},
+        json_schema_extra={
+            "example": {
+                "email": "jdoe@example.com",
+                "name": "Doe",
+                "firstname": "John",
+                "password": "12345678",
+            }
+        },
+    )
