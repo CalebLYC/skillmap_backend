@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query, Path
 from typing import List
-from app.core.providers import get_db
+from app.core.providers.auth_provider import auth_middleware
+from app.core.providers.providers import get_db
 from app.db.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
@@ -30,6 +31,17 @@ async def list_users(
     service: UserService = Depends(get_user_service),
 ):
     return await service.list_users(skip=skip, limit=limit, all=all)
+
+
+@router.get(
+    "/current",
+    response_model=UserReadSchema,
+    summary="Get the current authenticated user",
+)
+async def get_user(
+    current_user: UserReadSchema = Depends(auth_middleware),
+):
+    return current_user
 
 
 @router.get("/{user_id}", response_model=UserReadSchema, summary="Get a user by ID")

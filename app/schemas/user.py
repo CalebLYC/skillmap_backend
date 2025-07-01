@@ -1,6 +1,9 @@
+import datetime
 from bson import ObjectId
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import Optional
+
+from app.models.user import SexEnum
 
 
 class UserCreateSchema(BaseModel):
@@ -9,6 +12,8 @@ class UserCreateSchema(BaseModel):
     first_name: str = Field(...)
     last_name: str = Field(...)
     phone_number: Optional[str] = Field(default=None)
+    sex: Optional[SexEnum] = Field(default=None)
+    birthday_date: Optional[datetime.datetime] = Field(default=None)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -22,6 +27,8 @@ class UserCreateSchema(BaseModel):
                 "first_name": "John",
                 "password": "12345678",
                 "phone_number": "90000000",
+                "sex": "M",
+                "birthday_date": "2004-01-01",
             }
         },
     )
@@ -33,6 +40,8 @@ class UserUpdateSchema(BaseModel):
     first_name: Optional[str] = Field(default=None)
     last_name: Optional[str] = Field(default=None)
     phone_nulber: Optional[str] = Field(default=None)
+    sex: Optional[SexEnum] = Field(default=None)
+    birthday_date: Optional[datetime.datetime] = Field(default=None)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -43,6 +52,8 @@ class UserUpdateSchema(BaseModel):
                 "first_name": "John",
                 "password": "12345678",
                 "phone_number": "90000000",
+                "sex": "M|F",
+                "birthday_date": "2004-01-01",
             }
         },
     )
@@ -54,6 +65,9 @@ class UserReadSchema(BaseModel):
     first_name: Optional[str] = Field(default=None)
     last_name: Optional[str] = Field(default=None)
     phone_number: Optional[str] = Field(default=None)
+    sex: Optional[SexEnum] = Field(default=None)
+    birthday_date: Optional[datetime.datetime] = Field(default=None)
+    created_at: Optional[datetime.datetime] = Field(default=None)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -69,6 +83,9 @@ class UserReadSchema(BaseModel):
                 "first_name": "John",
                 "password": "12345678",
                 "phone_number": "90000000",
+                "sex": "M|F",
+                "birthday_date": "2004-01-01",
+                "created_at": "20025-01-01",
             }
         },
     )

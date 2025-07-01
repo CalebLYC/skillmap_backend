@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
+import datetime
 
 from jose import JWTError, jwt
-from app.core.providers import get_settings
+from app.core.providers.providers import get_settings
 
 
 class JWTUtils:
@@ -14,22 +14,33 @@ class JWTUtils:
             cls._settings = get_settings()
         return cls._instance
 
-    def create_access_token(data: dict, expires_delta: timedelta = None):
+    @staticmethod
+    def create_access_token(
+        data: dict, expires_delta: datetime.timedelta = None
+    ) -> tuple[str, datetime.datetime]:
         # S'assurer que le singleton est instancié
         if JWTUtils._settings is None:
             JWTUtils()
         to_encode = data.copy()
-        expire = datetime.utcnow() + expires_delta or timedelta(
-            (JWTUtils._settings.access_token_expire_weeks) * 10080
+        expire = datetime.datetime.utcnow() + (
+            expires_delta
+            if expires_delta
+            else datetime.timedelta(
+                (JWTUtils._settings.access_token_expire_weeks) * 10080
+            )
         )
         to_encode.update({"exp": expire})
-        return jwt.encode(
-            to_encode,
-            JWTUtils._settings.jwt_secret_key,
-            algorithm=JWTUtils._settings.jwt_algorithm,
+        return (
+            jwt.encode(
+                to_encode,
+                JWTUtils._settings.jwt_secret_key,
+                algorithm=JWTUtils._settings.jwt_algorithm,
+            ),
+            expire,
         )
 
-    def decode_access_token(token: str):
+    @staticmethod
+    def decode_access_token(token: str) -> dict:
         # S'assurer que le singleton est instancié
         if JWTUtils._settings is None:
             JWTUtils()

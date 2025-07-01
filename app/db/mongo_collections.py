@@ -3,3 +3,4 @@ class DBCollections:
     SKILLS = "skills"
     GOALS = "goals"
     TRACKING = "tracking"
+    TOKENS = "tokens"

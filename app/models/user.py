@@ -1,3 +1,5 @@
+import datetime
+from enum import Enum
 from pydantic import BaseModel, BeforeValidator, ConfigDict, EmailStr, Field
 from typing import Annotated, Optional
 from bson import ObjectId
@@ -7,6 +9,11 @@ def validate_object_id(v: str) -> str:
     if not ObjectId.is_valid(v):
         raise ValueError(f"Invalid ObjectId: {v}")
     return v
+
+
+class SexEnum(str, Enum):
+    MALE = "M"
+    FEMALE = "F"
 
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
@@ -19,6 +26,9 @@ class UserModel(BaseModel):
     first_name: str = Field(...)
     last_name: str = Field(...)
     phone_number: Optional[str] = Field(default=None)
+    sex: Optional[SexEnum] = Field(default=None)
+    birthday_date: Optional[datetime.datetime] = Field(default=None)
+    created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -34,6 +44,9 @@ class UserModel(BaseModel):
                 "first_name": "John",
                 "password": "12345678",
                 "phone_number": "90000000",
+                "sex": "M",
+                "birthday_date": "2004-01-01",
+                "created_at": "20025-01-01",
             }
         },
     )
