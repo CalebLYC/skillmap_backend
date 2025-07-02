@@ -26,11 +26,11 @@ class PermissionRepository:
         cursor = self.collection.find({})
         return [PermissionModel(**doc) async for doc in cursor]
 
-    async def create(self, permission: PermissionModel) -> PermissionModel:
-        await self.collection.insert_one(
+    async def create(self, permission: PermissionModel) -> str:
+        result = await self.collection.insert_one(
             permission.model_dump(by_alias=True, exclude=["id"])
         )
-        return permission
+        return result.inserted_id
 
     async def update(self, id: str, update_data: dict) -> bool:
         result = await self.collection.update_one(

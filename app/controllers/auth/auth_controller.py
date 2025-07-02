@@ -63,7 +63,9 @@ async def get_user(
     return UserReadSchema.model_validate(current_user)
 
 
-@router.delete("/logout", status_code=204, summary="Logout the current user")
+@router.delete(
+    "/logout", status_code=status.HTTP_204_NO_CONTENT, summary="Logout the current user"
+)
 async def delete_user(
     service: AuthService = Depends(get_auth_service),
     current_user: UserReadSchema = Depends(auth_middleware),

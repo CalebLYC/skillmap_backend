@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, Path
+from fastapi import APIRouter, Depends, Query, Path, status
 from typing import List
 from app.providers.auth_provider import auth_middleware, require_permission
 from app.providers.service_provider import get_user_service
@@ -56,7 +56,10 @@ async def get_user(
 
 
 @router.post(
-    "/", response_model=UserReadSchema, status_code=201, summary="Create a new user"
+    "/",
+    response_model=UserReadSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new user",
 )
 async def create_user(
     user_create: UserCreateSchema,
@@ -74,7 +77,9 @@ async def update_user(
     return await service.update_user(user_id, user_update)
 
 
-@router.delete("/{user_id}", status_code=204, summary="Delete a user by ID")
+@router.delete(
+    "/{user_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete a user by ID"
+)
 async def delete_user(
     user_id: str = Path(..., min_length=24, max_length=24),
     service: UserService = Depends(get_user_service),

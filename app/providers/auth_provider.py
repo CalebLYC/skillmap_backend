@@ -11,6 +11,7 @@ from app.providers.service_provider import get_permission_service
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.user_repository import UserRepository
 from app.models.user import UserModel
+from app.schemas.user import UserReadSchema
 from app.services.auth.permission_service import PermissionService
 
 
@@ -63,7 +64,10 @@ def require_permission(permission_code: str):
             ps: PermissionService = Depends(get_permission_service),
         ):
             try:
-                await ps.ensure_permission(user, permission_code)
+                await ps.ensure_permission(
+                    user=UserReadSchema.model_validate(user),
+                    permission_code=permission_code,
+                )
             except HTTPException as e:
                 raise HTTPException(
                     status_code=e.status_code,

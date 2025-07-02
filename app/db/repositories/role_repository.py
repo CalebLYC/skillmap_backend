@@ -26,9 +26,11 @@ class RoleRepository:
         cursor = self.collection.find({})
         return [RoleModel(**doc) async for doc in cursor]
 
-    async def create(self, role: RoleModel) -> RoleModel:
-        await self.collection.insert_one(role.model_dump(by_alias=True, exclude=["id"]))
-        return role
+    async def create(self, role: RoleModel) -> str:
+        result = await self.collection.insert_one(
+            role.model_dump(by_alias=True, exclude=["id"])
+        )
+        return result.inserted_id
 
     async def update(self, role_id: str, update_data: dict) -> bool:
         result = await self.collection.update_one(

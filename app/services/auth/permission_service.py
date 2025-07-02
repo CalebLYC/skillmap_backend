@@ -2,9 +2,12 @@ from typing import List
 from fastapi import HTTPException
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
-from app.models.role import PermissionModel
-from app.models.user import UserModel
-from app.schemas.role import PermissionReadSchema, PermissionUpdateSchema
+from app.schemas.role import (
+    PermissionCreateSchema,
+    PermissionReadSchema,
+    PermissionUpdateSchema,
+)
+from app.schemas.user import UserReadSchema
 
 
 class PermissionService:
@@ -14,7 +17,7 @@ class PermissionService:
         self.role_repos = role_repos
         self.permission_repos = permission_repos
 
-    async def get_all_permissions(self, user: UserModel) -> set[str]:
+    async def get_all_permissions(self, user: UserReadSchema) -> set[str]:
         # 1. Permissions directes
         perms = set(user.permissions)
 
@@ -37,11 +40,13 @@ class PermissionService:
 
         return perms
 
-    async def has_permission(self, user: UserModel, permission_code: str) -> bool:
+    async def has_permission(self, user: UserReadSchema, permission_code: str) -> bool:
         all_permissions = await self.get_all_permissions(user)
         return permission_code in all_permissions
 
-    async def ensure_permission(self, user: UserModel, permission_code: str) -> bool:
+    async def ensure_permission(
+        self, user: UserReadSchema, permission_code: str
+    ) -> bool:
         db_permission = await self.permission_repos.find_by_code(code=permission_code)
         if not db_permission:
             raise HTTPException(status_code=500, detail="Unkown permission")
@@ -51,43 +56,67 @@ class PermissionService:
 
     async def get_permission_by_code(
         self, permission_code: str
-    ) -> PermissionModel | None:
+    ) -> PermissionReadSchema | None:
         try:
-            return await self.permission_repos.find_by_code(code=permission_code)
+            permission = await self.permission_repos.find_by_code(code=permission_code)
+            if not permission:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Permission not found",
+                )
+            return PermissionReadSchema.model_validate(permission)
         except HTTPException as e:
             raise HTTPException(
                 status_code=e.status_code,
                 detail=f"Error getting permission: {str(e.detail)}",
             )
 
-    async def get_permission(self, permission_id: str) -> PermissionModel | None:
+    async def get_permission(self, permission_id: str) -> PermissionReadSchema | None:
         try:
-            return await self.permission_repos.find_by_id(id=permission_id)
+            permission = await self.permission_repos.find_by_id(id=permission_id)
+            if not permission:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Permission not found",
+                )
+            return PermissionReadSchema.model_validate(permission)
         except HTTPException as e:
             raise HTTPException(
                 status_code=e.status_code,
                 detail=f"Error getting permission: {str(e.detail)}",
             )
 
-    async def list_permissions(self) -> List[PermissionModel]:
+    async def list_permissions(self) -> List[PermissionReadSchema]:
         try:
-            return await self.permission_repos.list_permissions()
+            permissions = await self.permission_repos.list_permissions()
+            return [PermissionReadSchema.model_validate(p) for p in permissions]
         except HTTPException as e:
             raise HTTPException(
                 status_code=e.status_code,
                 detail=f"Error getting permissions: {str(e.detail)}",
             )
 
-    async def create_permission(self, permission: PermissionModel) -> PermissionModel:
+    async def create_permission(
+        self, permission: PermissionCreateSchema
+    ) -> PermissionReadSchema:
         try:
-            return await self.permission_repos.create(permission=permission)
+            db_permission = await self.permission_repos.find_by_code(
+                code=permission.code
+            )
+            if db_permission:
+                raise HTTPException(
+                    status_code=400, detail="Permission already created"
+                )
+            inserted_id = await self.permission_repos.create(permission=permission)
+            created = await self.permission_repos.find_by_id(id=inserted_id)
+            return PermissionReadSchema.model_validate(created)
         except HTTPException as e:
             raise HTTPException(
                 status_code=e.status_code,
                 detail=f"Error creating permission: {str(e.detail)}",
             )
 
-    async def update(
+    async def update_permission(
         self, permission_id: str, permission_update: PermissionUpdateSchema
     ) -> bool:
         try:
@@ -117,18 +146,25 @@ class PermissionService:
                 detail=f"Error updating permission: {str(e.detail)}",
             )
 
-    async def delete_permission(self, permission_id: str) -> bool:
+    async def delete_permission(self, permission_id: str) -> None:
         try:
-            return await self.permission_repos.delete_one(id=permission_id)
+            permission = await self.permission_repos.find_by_id(id=permission_id)
+            if not permission:
+                raise HTTPException(status_code=404, detail="Permission not found")
+            success = await self.permission_repos.delete_one(id=permission_id)
+            if not success:
+                raise HTTPException(status_code=500, detail="Delete failed")
         except HTTPException as e:
             raise HTTPException(
                 status_code=e.status_code,
                 detail=f"Error deleting permission: {str(e.detail)}",
             )
 
-    async def delete_all_permissions(self) -> bool:
+    async def delete_all_permissions(self) -> None:
         try:
-            return await self.permission_repos.delete_all()
+            success = await self.permission_repos.delete_all()
+            if not success:
+                raise HTTPException(status_code=500, detail="Delete failed")
         except HTTPException as e:
             raise HTTPException(
                 status_code=e.status_code,
