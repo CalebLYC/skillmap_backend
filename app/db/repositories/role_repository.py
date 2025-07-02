@@ -3,7 +3,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.mongo_collections import DBCollections
-from app.models.role import RoleModel
+from app.models.Role import RoleModel
 
 
 class RoleRepository:

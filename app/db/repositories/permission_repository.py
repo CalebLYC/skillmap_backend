@@ -3,7 +3,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.mongo_collections import DBCollections
-from app.models.role import PermissionModel
+from app.models.Role import PermissionModel
 
 
 class PermissionRepository:

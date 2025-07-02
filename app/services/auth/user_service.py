@@ -1,7 +1,7 @@
 from typing import Optional, List
 from app.core.security import SecurityUtils
 from app.db.repositories.user_repository import UserRepository
-from app.models.user import UserModel
+from app.models.User import UserModel
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from fastapi import HTTPException
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.providers.auth_provider import auth_middleware
 from app.providers.service_provider import get_auth_service
-from app.models.user import UserModel
+from app.models.User import UserModel
 from app.schemas.auth_schema import (
     LoginRequestSchema,
     LoginResponseSchema,

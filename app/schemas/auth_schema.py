@@ -3,8 +3,8 @@ from typing import Optional
 from bson import ObjectId
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.models.access_token import AccessTokenModel
-from app.models.user import SexEnum, UserModel
+from app.models.AccessToken import AccessTokenModel
+from app.models.User import SexEnum
 from app.schemas.user import UserReadSchema
 
 

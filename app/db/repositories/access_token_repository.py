@@ -3,7 +3,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.mongo_collections import DBCollections
-from app.models.access_token import AccessTokenModel
+from app.models.AccessToken import AccessTokenModel
 
 
 class AccessTokenRepository:

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, Path, status
 from typing import List
 from app.providers.auth_provider import auth_middleware, require_permission
 from app.providers.service_provider import get_user_service
-from app.models.user import UserModel
+from app.models.User import UserModel
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
 

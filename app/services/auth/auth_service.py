@@ -7,13 +7,13 @@ from app.core.jwt import JWTUtils
 from app.core.security import SecurityUtils
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.user_repository import UserRepository
-from app.models.access_token import AccessTokenModel
+from app.models.AccessToken import AccessTokenModel
 from app.schemas.auth_schema import (
     LoginRequestSchema,
     LoginResponseSchema,
     RegisterSchema,
 )
-from app.models.user import UserModel
+from app.models.User import UserModel
 from app.schemas.user import UserReadSchema
 
 

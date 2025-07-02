@@ -3,7 +3,7 @@ from bson import ObjectId
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import List, Optional
 
-from app.models.user import SexEnum
+from app.models.User import SexEnum
 
 
 class UserCreateSchema(BaseModel):
