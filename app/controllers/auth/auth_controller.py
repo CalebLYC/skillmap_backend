@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
-from app.core.providers.auth_provider import auth_middleware
-from app.core.providers.providers import get_db
-from app.db.repositories.access_token_repository import AccessTokenRepository
-from app.db.repositories.user_repository import UserRepository
+from app.providers.auth_provider import auth_middleware
+from app.providers.service_provider import get_auth_service
 from app.models.user import UserModel
 from app.schemas.auth_schema import (
     LoginRequestSchema,
@@ -24,12 +22,6 @@ router = APIRouter(
         403: {"description": "Forbidden"},
     },
 )
-
-
-def get_auth_service(db=Depends(get_db)) -> AuthService:
-    user_repos = UserRepository(db)
-    access_token_repos = AccessTokenRepository(db)
-    return AuthService(user_repos=user_repos, access_token_repos=access_token_repos)
 
 
 @router.post(

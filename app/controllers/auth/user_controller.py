@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, Query, Path
 from typing import List
-from app.core.providers.auth_provider import auth_middleware, require_permission
-from app.core.providers.providers import get_db
-from app.db.repositories.user_repository import UserRepository
+from app.providers.auth_provider import auth_middleware, require_permission
+from app.providers.service_provider import get_user_service
 from app.models.user import UserModel
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
@@ -17,11 +16,6 @@ router = APIRouter(
         403: {"description": "Forbidden"},
     },
 )
-
-
-def get_user_service(db=Depends(get_db)) -> UserService:
-    repo = UserRepository(db)
-    return UserService(repo)
 
 
 @router.get(

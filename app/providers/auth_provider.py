@@ -3,12 +3,11 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
 
 from app.core.jwt import JWTUtils
-from app.core.providers.providers import (
+from app.providers.repository_provider import (
     get_access_token_repository,
-    get_db,
-    get_permission_service,
     get_user_repository,
 )
+from app.providers.service_provider import get_permission_service
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.user_repository import UserRepository
 from app.models.user import UserModel

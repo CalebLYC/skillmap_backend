@@ -56,10 +56,10 @@ class RegisterSchema(BaseModel):
         json_encoders={ObjectId: str},
         json_schema_extra={
             "example": {
-                "email": "jdoe@example.com",
-                "last_name": "Doe",
-                "first_name": "John",
-                "password": "12345678",
+                "email*": "jdoe@example.com",
+                "last_name*": "Doe",
+                "first_name*": "John",
+                "password*": "12345678",
                 "password_confirmation": "12345678",
                 "phone_number": "90000000",
                 "sex": "M",

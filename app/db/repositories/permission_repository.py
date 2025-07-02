@@ -3,36 +3,38 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.mongo_collections import DBCollections
-from app.models.role import RoleModel
+from app.models.role import PermissionModel
 
 
 class PermissionRepository:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db.get_collection(DBCollections.PERMISSIONS)
 
-    async def find_by_name(self, name: str) -> RoleModel | None:
-        data = await self.collection.find_one({"name": name})
-        return RoleModel(**data) if data else None
+    async def find_by_code(self, code: str) -> PermissionModel | None:
+        data = await self.collection.find_one({"code": code})
+        return PermissionModel(**data) if data else None
 
-    async def find_by_id(self, id: str) -> RoleModel | None:
+    async def find_by_id(self, id: str) -> PermissionModel | None:
         data = await self.collection.find_one({"_id": ObjectId(id)})
-        return RoleModel(**data) if data else None
+        return PermissionModel(**data) if data else None
 
-    async def find_many_by_names(self, names: List[str]) -> List[RoleModel]:
-        cursor = self.collection.find({"name": {"$in": names}})
-        return [RoleModel(**doc) async for doc in cursor]
+    async def find_many_by_codes(self, codes: List[str]) -> List[PermissionModel]:
+        cursor = self.collection.find({"code": {"$in": codes}})
+        return [PermissionModel(**doc) async for doc in cursor]
 
-    async def list_roles(self) -> List[RoleModel]:
+    async def list_permissions(self) -> List[PermissionModel]:
         cursor = self.collection.find({})
-        return [RoleModel(**doc) async for doc in cursor]
+        return [PermissionModel(**doc) async for doc in cursor]
 
-    async def create(self, role: RoleModel) -> RoleModel:
-        await self.collection.insert_one(role.model_dump(by_alias=True, exclude=["id"]))
-        return role
+    async def create(self, permission: PermissionModel) -> PermissionModel:
+        await self.collection.insert_one(
+            permission.model_dump(by_alias=True, exclude=["id"])
+        )
+        return permission
 
-    async def update(self, role_id: str, update_data: dict) -> bool:
+    async def update(self, id: str, update_data: dict) -> bool:
         result = await self.collection.update_one(
-            {"_id": ObjectId(role_id)}, {"$set": update_data}
+            {"_id": ObjectId(id)}, {"$set": update_data}
         )
         return result.modified_count > 0
 
@@ -40,8 +42,8 @@ class PermissionRepository:
         result = await self.collection.delete_one({"_id": ObjectId(id)})
         return result.deleted_count > 0
 
-    async def delete_one_by_name(self, name: str) -> bool:
-        result = await self.collection.delete_one({"name": name})
+    async def delete_one_by_code(self, code: str) -> bool:
+        result = await self.collection.delete_one({"code": code})
         return result.deleted_count > 0
 
     async def delete_all(self) -> bool:

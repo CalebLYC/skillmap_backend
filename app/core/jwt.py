@@ -1,7 +1,7 @@
 import datetime
 
 from jose import JWTError, jwt
-from app.core.providers.providers import get_settings
+from app.providers.providers import get_settings
 
 
 class JWTUtils:

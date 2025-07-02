@@ -22,10 +22,10 @@ class UserCreateSchema(BaseModel):
         from_attributes=True,
         json_schema_extra={
             "example": {
-                "email": "jdoe@example.com",
-                "last_name": "Doe",
-                "first_name": "John",
-                "password": "12345678",
+                "email*": "jdoe@example.com",
+                "last_name*": "Doe",
+                "first_name*": "John",
+                "password*": "12345678",
                 "phone_number": "90000000",
                 "sex": "M",
                 "birthday_date": "2004-01-01",

@@ -1,5 +1,5 @@
 import datetime
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 from bson import ObjectId
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
@@ -50,10 +50,30 @@ class RoleReadSchema(RoleCreateSchema):
     )
 
 
+class RoleUpdateSchema(BaseModel):
+    name: Optional[str] = Field(default=None)
+    permissions: Optional[List[str]] = Field(default=None)
+    inherited_roles: Optional[List[str]] = Field(default=None)
+
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_encoders={ObjectId: str},
+        json_schema_extra={
+            "example": {
+                "name": "user",
+                "permissions": ["user:read"],
+                "inherited_roles": ["role"],
+            }
+        },
+    )
+
+
 class PermissionCreateSchema(BaseModel):
     code: str = Field(...)
     description: str = Field(...)
-    created_at: datetime.datetime = Field(...)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -72,6 +92,7 @@ class PermissionCreateSchema(BaseModel):
 
 class PermissionReadSchema(PermissionCreateSchema):
     id: str = Field(..., alias="_id", serialization_alias="id")
+    created_at: datetime.datetime = Field(...)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -85,6 +106,25 @@ class PermissionReadSchema(PermissionCreateSchema):
                 "code": "user:read",
                 "description": "Read user",
                 "created_at": "20025-01-01",
+            }
+        },
+    )
+
+
+class PermissionUpdateSchema(BaseModel):
+    code: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_encoders={ObjectId: str},
+        json_schema_extra={
+            "example": {
+                "code": "user:read",
+                "description": "Read user",
             }
         },
     )

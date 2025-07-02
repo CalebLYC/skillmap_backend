@@ -1,7 +1,7 @@
 from httpx import ASGITransport, AsyncClient
 import pytest
 import pytest_asyncio
-from app.core.providers.providers import get_db
+from app.providers.providers import get_db
 from app.main import app
 from tests.common.fake_db import FakeDB
 
