@@ -1,5 +1,6 @@
 from typing import List
 from bson import ObjectId
+from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.mongo_collections import DBCollections
@@ -30,7 +31,13 @@ class RoleRepository:
         result = await self.collection.insert_one(
             role.model_dump(by_alias=True, exclude=["id"])
         )
-        return result.inserted_id
+        if hasattr(result, "inserted_id") and result.inserted_id:
+            new_role_id = str(result.inserted_id)
+        else:
+            raise HTTPException(
+                status_code=500, detail="Failed to retrieve ID of created role."
+            )
+        return new_role_id
 
     async def update(self, role_id: str, update_data: dict) -> bool:
         result = await self.collection.update_one(

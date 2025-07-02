@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import APIRouter, Body, Depends, Path, status
 
+from app.providers.auth_provider import require_role
 from app.providers.service_provider import get_permission_service
 from app.schemas.role import (
     PermissionCreateSchema,
@@ -13,7 +14,7 @@ from app.services.auth.permission_service import PermissionService
 router = APIRouter(
     prefix="/permissions",
     tags=["Permissions"],
-    dependencies=[],
+    dependencies=[require_role("user")],
     responses={
         404: {"description": "Not found"},
         401: {"description": "Not authenticated"},

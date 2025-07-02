@@ -7,12 +7,13 @@ from app.providers.repository_provider import (
     get_access_token_repository,
     get_user_repository,
 )
-from app.providers.service_provider import get_permission_service
+from app.providers.service_provider import get_permission_service, get_role_service
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.user_repository import UserRepository
 from app.models.User import UserModel
 from app.schemas.user import UserReadSchema
 from app.services.auth.permission_service import PermissionService
+from app.services.auth.role_service import RoleService
 
 
 oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -50,9 +51,11 @@ async def auth_middleware(
             raise HTTPException(status_code=401, detail="User not found")
         return user
     except HTTPException as e:
+        raise e
+    except Exception as e:
         raise HTTPException(
-            status_code=e.status_code,
-            detail=f"Error while getting user: {str(e.detail)}",
+            status_code=500,
+            detail=f"Error getting user by token: {str(e)}",
         )
 
 
@@ -69,10 +72,7 @@ def require_permission(permission_code: str):
                     permission_code=permission_code,
                 )
             except HTTPException as e:
-                raise HTTPException(
-                    status_code=e.status_code,
-                    detail=f"Error ensuring permission: {str(e.detail)}",
-                )
+                raise e
             except Exception as e:
                 raise HTTPException(
                     status_code=500,
@@ -81,10 +81,36 @@ def require_permission(permission_code: str):
 
         return Depends(dependency)
     except HTTPException as e:
+        raise e
+    except Exception as e:
         raise HTTPException(
-            status_code=e.status_code,
-            detail=f"Error while setting permission dependency: {str(e.detail)}",
+            status_code=500,
+            detail=f"Error while setting permission dependency: {str(e)}",
         )
+
+
+def require_role(role_name: str):
+    try:
+
+        async def dependency(
+            user: UserModel = Depends(auth_middleware),
+            rs: RoleService = Depends(get_role_service),
+        ):
+            try:
+                await rs.ensure_role(
+                    user=UserReadSchema.model_validate(user), role_name=role_name
+                )
+            except HTTPException as e:
+                raise e
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error ensuring role: {str(e)}",
+                )
+
+        return Depends(dependency)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(
             status_code=500,

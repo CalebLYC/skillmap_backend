@@ -11,6 +11,7 @@ from app.providers.repository_provider import (
 )
 from app.services.auth.auth_service import AuthService
 from app.services.auth.permission_service import PermissionService
+from app.services.auth.role_service import RoleService
 from app.services.auth.user_service import UserService
 
 
@@ -32,3 +33,9 @@ def get_permission_service(
     permission_repos: PermissionRepository = Depends(get_permission_repository),
 ) -> PermissionService:
     return PermissionService(role_repos=role_repos, permission_repos=permission_repos)
+
+
+def get_role_service(
+    role_repos: RoleRepository = Depends(get_role_repository),
+) -> RoleService:
+    return RoleService(role_repos=role_repos)

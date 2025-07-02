@@ -81,9 +81,11 @@ class PermissionService:
                 )
             return PermissionReadSchema.model_validate(permission)
         except HTTPException as e:
+            raise e
+        except Exception as e:
             raise HTTPException(
-                status_code=e.status_code,
-                detail=f"Error getting permission: {str(e.detail)}",
+                status_code=500,
+                detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
 
     async def list_permissions(self) -> List[PermissionReadSchema]:
@@ -91,9 +93,11 @@ class PermissionService:
             permissions = await self.permission_repos.list_permissions()
             return [PermissionReadSchema.model_validate(p) for p in permissions]
         except HTTPException as e:
+            raise e
+        except Exception as e:
             raise HTTPException(
-                status_code=e.status_code,
-                detail=f"Error getting permissions: {str(e.detail)}",
+                status_code=500,
+                detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
 
     async def create_permission(
@@ -111,9 +115,11 @@ class PermissionService:
             created = await self.permission_repos.find_by_id(id=inserted_id)
             return PermissionReadSchema.model_validate(created)
         except HTTPException as e:
+            raise e
+        except Exception as e:
             raise HTTPException(
-                status_code=e.status_code,
-                detail=f"Error creating permission: {str(e.detail)}",
+                status_code=500,
+                detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
 
     async def update_permission(
@@ -141,9 +147,11 @@ class PermissionService:
             updated = await self.permission_repos.find_by_id(id=permission_id)
             return PermissionReadSchema.model_validate(updated)
         except HTTPException as e:
+            raise e
+        except Exception as e:
             raise HTTPException(
-                status_code=e.status_code,
-                detail=f"Error updating permission: {str(e.detail)}",
+                status_code=500,
+                detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
 
     async def delete_permission(self, permission_id: str) -> None:
@@ -155,9 +163,11 @@ class PermissionService:
             if not success:
                 raise HTTPException(status_code=500, detail="Delete failed")
         except HTTPException as e:
+            raise e
+        except Exception as e:
             raise HTTPException(
-                status_code=e.status_code,
-                detail=f"Error deleting permission: {str(e.detail)}",
+                status_code=500,
+                detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
 
     async def delete_all_permissions(self) -> None:
@@ -166,7 +176,9 @@ class PermissionService:
             if not success:
                 raise HTTPException(status_code=500, detail="Delete failed")
         except HTTPException as e:
+            raise e
+        except Exception as e:
             raise HTTPException(
-                status_code=e.status_code,
-                detail=f"Error deleting all permission: {str(e.detail)}",
+                status_code=500,
+                detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
