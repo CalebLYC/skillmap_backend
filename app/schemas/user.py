@@ -1,7 +1,7 @@
 import datetime
 from bson import ObjectId
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-from typing import Optional
+from typing import List, Optional
 
 from app.models.user import SexEnum
 
@@ -66,6 +66,8 @@ class UserReadSchema(BaseModel):
     last_name: Optional[str] = Field(default=None)
     phone_number: Optional[str] = Field(default=None)
     sex: Optional[SexEnum] = Field(default=None)
+    roles: List[str] = Field(default=[])
+    permissions: List[str] = Field(default=[])
     birthday_date: Optional[datetime.datetime] = Field(default=None)
     created_at: Optional[datetime.datetime] = Field(default=None)
 
@@ -84,6 +86,8 @@ class UserReadSchema(BaseModel):
                 "password": "12345678",
                 "phone_number": "90000000",
                 "sex": "M|F",
+                "roles": ["user"],
+                "permissions": ["user:read"],
                 "birthday_date": "2004-01-01",
                 "created_at": "20025-01-01",
             }

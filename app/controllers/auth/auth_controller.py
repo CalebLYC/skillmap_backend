@@ -4,6 +4,7 @@ from app.core.providers.auth_provider import auth_middleware
 from app.core.providers.providers import get_db
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.user_repository import UserRepository
+from app.models.user import UserModel
 from app.schemas.auth_schema import (
     LoginRequestSchema,
     LoginResponseSchema,
@@ -65,9 +66,9 @@ async def register(
     summary="Get the current authenticated user",
 )
 async def get_user(
-    current_user: UserReadSchema = Depends(auth_middleware),
+    current_user: UserModel = Depends(auth_middleware),
 ):
-    return current_user
+    return UserReadSchema.model_validate(current_user)
 
 
 @router.delete("/logout", status_code=204, summary="Logout the current user")

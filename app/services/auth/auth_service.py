@@ -82,3 +82,6 @@ class AuthService:
         if not result:
             raise HTTPException(status_code=404, detail="User not found")
         return result
+
+    """async def clean_expired_tokens():
+        await mongo_db["access_tokens"].delete_many({"expires_at": {"$lt": datetime.utcnow()}})"""

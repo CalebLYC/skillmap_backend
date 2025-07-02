@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, Query, Path
 from typing import List
-from app.core.providers.auth_provider import auth_middleware
+from app.core.providers.auth_provider import auth_middleware, require_permission
 from app.core.providers.providers import get_db
 from app.db.repositories.user_repository import UserRepository
+from app.models.user import UserModel
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
 
@@ -23,7 +24,12 @@ def get_user_service(db=Depends(get_db)) -> UserService:
     return UserService(repo)
 
 
-@router.get("/", response_model=List[UserReadSchema], summary="List users")
+@router.get(
+    "/",
+    response_model=List[UserReadSchema],
+    summary="List users",
+    dependencies=[require_permission("user:read")],
+)
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
@@ -39,9 +45,9 @@ async def list_users(
     summary="Get the current authenticated user",
 )
 async def get_user(
-    current_user: UserReadSchema = Depends(auth_middleware),
+    current_user: UserModel = Depends(auth_middleware),
 ):
-    return current_user
+    return UserReadSchema.model_validate(current_user)
 
 
 @router.get("/{user_id}", response_model=UserReadSchema, summary="Get a user by ID")
