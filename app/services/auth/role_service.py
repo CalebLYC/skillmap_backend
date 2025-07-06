@@ -1,17 +1,22 @@
 from typing import List
 from fastapi import HTTPException
+from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
 from app.schemas.role import (
     RoleCreateSchema,
     RoleReadSchema,
     PermissionUpdateSchema,
+    RoleUpdateSchema,
 )
 from app.schemas.user import UserReadSchema
 
 
 class RoleService:
-    def __init__(self, role_repos: RoleRepository):
+    def __init__(
+        self, role_repos: RoleRepository, permission_repos: PermissionRepository
+    ):
         self.role_repos = role_repos
+        self.permission_repos = permission_repos
 
     async def get_all_roles(self, user: UserReadSchema) -> set[str]:
         # 1. Roles directes
@@ -122,6 +127,17 @@ class RoleService:
                             detail=f"Role '{inherited_role_name}' not found. Please create it first.",
                         )
 
+            if role.permissions:
+                db_permission_codes = {
+                    p.code for p in await self.permission_repos.list_permissions()
+                }
+                for permission_code in role.permissions:
+                    if permission_code not in db_permission_codes:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Permission '{permission_code}' not found. Please create it first.",
+                        )
+
             # 3. Create the role in the repository
             inserted_id = await self.role_repos.create(role=role)
 
@@ -146,9 +162,7 @@ class RoleService:
                 detail=f"An unexpected error occurred while creating role: {str(e)}",
             )
 
-    async def update_role(
-        self, role_id: str, role_update: PermissionUpdateSchema
-    ) -> bool:
+    async def update_role(self, role_id: str, role_update: RoleUpdateSchema) -> bool:
         try:
             role = await self.role_repos.find_by_id(id=role_id)
             if not role:
@@ -161,6 +175,29 @@ class RoleService:
                     raise HTTPException(
                         status_code=400, detail="Role name already used"
                     )
+
+            if role_update.inherited_roles:
+                existing_role_names = {
+                    r.name for r in await self.role_repos.list_roles()
+                }
+
+                for inherited_role_name in role_update.inherited_roles:
+                    if inherited_role_name not in existing_role_names:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Role '{inherited_role_name}' not found. Please create it first.",
+                        )
+
+            if role_update.permissions:
+                db_permission_codes = {
+                    p.code for p in await self.permission_repos.list_permissions()
+                }
+                for permission_code in role_update.permissions:
+                    if permission_code not in db_permission_codes:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Permission '{permission_code}' not found. Please create it first.",
+                        )
 
             success = await self.role_repos.update(id=role_id, update_data=update_data)
             if not success:

@@ -24,8 +24,12 @@ def get_auth_service(
 
 def get_user_service(
     user_repos: UserRepository = Depends(get_user_repository),
+    role_repos: RoleRepository = Depends(get_role_repository),
+    permission_repos: PermissionRepository = Depends(get_permission_repository),
 ) -> UserService:
-    return UserService(user_repo=user_repos)
+    return UserService(
+        user_repo=user_repos, role_repos=role_repos, permission_repos=permission_repos
+    )
 
 
 def get_permission_service(
@@ -37,5 +41,6 @@ def get_permission_service(
 
 def get_role_service(
     role_repos: RoleRepository = Depends(get_role_repository),
+    permission_repos: PermissionRepository = Depends(get_permission_repository),
 ) -> RoleService:
-    return RoleService(role_repos=role_repos)
+    return RoleService(role_repos=role_repos, permission_repos=permission_repos)

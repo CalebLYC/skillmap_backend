@@ -9,8 +9,8 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class RoleCreateSchema(BaseModel):
     name: str = Field(...)
-    permissions: List[str] = Field(default=[])
-    inherited_roles: List[str] = Field(default=[])
+    permissions: Optional[List[str]] = Field(default=[])
+    inherited_roles: Optional[List[str]] = Field(default=[])
 
     model_config = ConfigDict(
         validate_by_name=True,

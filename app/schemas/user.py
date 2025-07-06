@@ -14,6 +14,8 @@ class UserCreateSchema(BaseModel):
     phone_number: Optional[str] = Field(default=None)
     sex: Optional[SexEnum] = Field(default=None)
     birthday_date: Optional[datetime.datetime] = Field(default=None)
+    roles: Optional[List[str]] = Field(default=[])
+    permissions: Optional[List[str]] = Field(default=[])
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -29,6 +31,8 @@ class UserCreateSchema(BaseModel):
                 "phone_number": "90000000",
                 "sex": "M",
                 "birthday_date": "2004-01-01",
+                "roles": ["user"],
+                "permissions": ["user:read"],
             }
         },
     )
@@ -42,6 +46,8 @@ class UserUpdateSchema(BaseModel):
     phone_nulber: Optional[str] = Field(default=None)
     sex: Optional[SexEnum] = Field(default=None)
     birthday_date: Optional[datetime.datetime] = Field(default=None)
+    roles: Optional[List[str]] = Field(default=None)
+    permissions: Optional[List[str]] = Field(default=None)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -66,10 +72,10 @@ class UserReadSchema(BaseModel):
     last_name: Optional[str] = Field(default=None)
     phone_number: Optional[str] = Field(default=None)
     sex: Optional[SexEnum] = Field(default=None)
-    roles: List[str] = Field(default=[])
-    permissions: List[str] = Field(default=[])
     birthday_date: Optional[datetime.datetime] = Field(default=None)
     created_at: Optional[datetime.datetime] = Field(default=None)
+    roles: List[str] = Field(default=[])
+    permissions: List[str] = Field(default=[])
 
     model_config = ConfigDict(
         validate_by_name=True,
