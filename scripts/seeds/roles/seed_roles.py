@@ -17,7 +17,7 @@ async def seed_roles():
     settings = Settings()
     client = AsyncIOMotorClient(settings.database_uri)
     db = client[settings.database_name]
-    roles_col = db.get_collection(DBCollections.ROLES)  # Assuming DBCollections.ROLES
+    roles_col = db.get_collection(DBCollections.ROLES)
 
     print("Seeding roles...")
 
@@ -27,27 +27,21 @@ async def seed_roles():
 
     # Instantiate repositories and service
     role_repo = RoleRepository(db)
-    permission_repo = PermissionRepository(db)  # RoleService depends on this
+    permission_repo = PermissionRepository(db)
     role_service = RoleService(role_repos=role_repo, permission_repos=permission_repo)
 
-    # It's crucial to seed roles in an order that respects inheritance,
-    # i.e., inherited roles must exist before the role inheriting them is created.
-    # The BASE_ROLES_SEED list is ordered from least dependent (guest) to most dependent (admin).
     for role_data in BASE_ROLES_SEED:
         try:
-            # Create a RoleCreateSchema instance from the dictionary
             role_create_schema = RoleCreateSchema(**role_data)
-            # Use the RoleService to create the role, as it handles validations
             await role_service.create_role(role_create_schema)
-            print(f"Seeded role: {role_data['name']}")
+            # print(f"Seeded role: {role_data['name']}")
         except Exception as e:
             print(f"Error seeding role {role_data.get('name', 'N/A')}: {e}")
 
     print("Finished seeding roles.")
-    client.close()  # Close the client connection
+    client.close()
 
 
 if __name__ == "__main__":
-    # This block allows you to run the seeder directly from the command line
-    # python -m app.db.seeds.roles.seed_roles
+    # python -m scripts.seeds.roles.seed_roles
     asyncio.run(seed_roles())

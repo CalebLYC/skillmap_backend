@@ -32,9 +32,11 @@ BASE_PERMISSIONS_SEED: List[Dict[str, str]] = [
     {"code": "permission:update", "description": "Modify existing permissions"},
     {"code": "permission:delete", "description": "Delete permissions"},
     {"code": "permission:list", "description": "List all permissions"},
+    {"code": "role:assign", "description": "Assign a role to a user"},
+    {"code": "permission:assign", "description": "Assign a permission to a user/role"},
     # Example: General Admin Permissions
     {
-        "code": "admin:full_access",
+        "code": "superadmin:full_access",
         "description": "Grants full administrative access to the system",
     },
 ]

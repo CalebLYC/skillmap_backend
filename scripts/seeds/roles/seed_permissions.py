@@ -27,18 +27,16 @@ async def seed_permissions():
 
     for perm_data in BASE_PERMISSIONS_SEED:
         try:
-            # Create a PermissionModel instance from the dictionary
             permission_model = PermissionModel(**perm_data)
             await permission_repo.create(permission_model)
-            print(f"Seeded permission: {perm_data['code']}")
+            # print(f"Seeded permission: {perm_data['code']}")
         except Exception as e:
             print(f"Error seeding permission {perm_data.get('code', 'N/A')}: {e}")
 
     print("Finished seeding permissions.")
-    client.close()  # Close the client connection
+    client.close()
 
 
 if __name__ == "__main__":
-    # This block allows you to run the seeder directly from the command line
-    # python -m app.db.seeds.permissions.seed_permissions
+    # python -m scripts.seeds.roles.seed_permissions
     asyncio.run(seed_permissions())

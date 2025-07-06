@@ -24,34 +24,46 @@ BASE_ROLES_SEED: List[Dict[str, Any]] = [
         "inherited_roles": ["guest"],  # Inherits all permissions from 'guest'
     },
     {
-        "name": "editor",
+        "name": "moderator",
         "description": "User with content creation and modification privileges.",
         "permissions": [
             "user:read",
             "user:list",
             "role:read",
             "permission:read",
-            # Add permissions specific to content editing, e.g.,
-            # "content:create",
-            # "content:update",
-            # "content:delete",
         ],
-        "inherited_roles": ["user"],  # Inherits all permissions from 'user'
+        "inherited_roles": ["user"],
     },
     {
         "name": "admin",
-        "description": "Administrator with full system access.",
+        "description": "Administrator with a high level access.",
         "permissions": [
-            "admin:full_access",  # A single permission that grants all
-            # Alternatively, list all specific admin permissions:
-            # "user:read", "user:create", "user:update", "user:delete", "user:list",
-            # "role:read", "role:create", "role:update", "role:delete", "role:list",
-            # "role:assign_permissions", "role:remove_permissions",
-            # "role:assign_inherited_role", "role:remove_inherited_role",
-            # "permission:read", "permission:create", "permission:update", "permission:delete", "permission:list",
+            "user:read",
+            "user:create",
+            "user:update",
+            "user:delete",
+            "user:list",
+            "role:read",
+            "role:create",
+            "role:update",
+            "role:delete",
+            "role:list",
+            "role:assign_permissions",
+            "role:remove_permissions",
+            "role:assign_inherited_role",
+            "role:remove_inherited_role",
+            "permission:read",
+            "permission:create",
+            "permission:update",
+            "permission:delete",
+            "permission:list",
         ],
-        "inherited_roles": [
-            "editor"
-        ],  # Inherits all permissions from 'editor' (and transitively from 'user', 'guest')
+        "inherited_roles": ["moderator"],
+    },
+    {
+        "name": "superadmin",
+        "description": "Administrator with full system access.",
+        "permissions": ["superadmin:full_access", "role:assign", "permission:assign"],
+        "inherited_roles": ["admin"],
     },
 ]
