@@ -128,3 +128,37 @@ class PermissionUpdateSchema(BaseModel):
             }
         },
     )
+
+
+class AssignPermissionSchema(BaseModel):
+    permissions: List[str] = Field(...)
+
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_encoders={ObjectId: str},
+        json_schema_extra={
+            "example": {
+                "permissions": ["user:read"],
+            }
+        },
+    )
+
+
+class AssignRolesSchema(BaseModel):
+    roles: List[str] = Field(...)
+
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_encoders={ObjectId: str},
+        json_schema_extra={
+            "example": {
+                "roles": ["role"],
+            }
+        },
+    )

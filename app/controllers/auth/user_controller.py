@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Query, Path, status
+from fastapi import APIRouter, Body, Depends, Query, Path, status
 from typing import List
 from app.providers.auth_provider import auth_middleware, require_permission
 from app.providers.service_provider import get_user_service
 from app.models.User import UserModel
+from app.schemas.role import AssignPermissionSchema, AssignRolesSchema
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
 
@@ -86,3 +87,58 @@ async def delete_user(
 ):
     await service.delete_user(user_id)
     return {"detail": "User deleted"}
+
+
+@router.patch(
+    "/{id}/permissions",
+    response_model=UserReadSchema,
+    summary="Assign permissions to a user",
+    # dependencies=[require_permission("role:assign_permissions")],
+)
+async def assign_permissions(
+    body: AssignPermissionSchema,
+    id: str = Path(..., min_length=24, max_length=24, description="The ID of the user"),
+    service: UserService = Depends(get_user_service),
+):
+    """
+    Assigns a list of permission codes to a user.
+    Permissions not found will result in a 400 error.
+    """
+    return await service.assign_permissions_to_user(
+        user_id=id, permissions_to_add=body.permissions
+    )
+
+
+@router.patch(
+    "/{id}/roles",
+    response_model=UserReadSchema,
+    summary="Assign roles to a user",
+    # dependencies=[require_permission("role:assign_permissions")],
+)
+async def assign_roles(
+    body: AssignRolesSchema,
+    id: str = Path(..., min_length=24, max_length=24, description="The ID of the user"),
+    service: UserService = Depends(get_user_service),
+):
+    """
+    Assigns a list of roles names to a user.
+    Roles not found will result in a 400 error.
+    """
+    return await service.assign_roles_to_user(user_id=id, roles_to_add=body.roles)
+
+
+@router.patch(
+    "/{id}/roles/remove",
+    response_model=UserReadSchema,
+    summary="Remove roles from a user",
+    # dependencies=[require_permission("role:remove_permissions")],
+)
+async def remove_permissions_from_user(
+    body: AssignRolesSchema,
+    id: str = Path(..., min_length=24, max_length=24, description="The ID of the user"),
+    service: UserService = Depends(get_user_service),
+):
+    """
+    Removes a list of permission codes from a user.
+    """
+    return await service.remove_roles_from_user(user_id=id, roles_to_remove=body.roles)
