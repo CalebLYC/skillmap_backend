@@ -28,25 +28,25 @@ class PermissionRepository:
         return [PermissionModel(**doc) for doc in docs]
 
     async def create(self, permission: PermissionModel) -> str:
-        result = await self._db_ops.insert_one(
+        inserted_id = await self._db_ops.insert_one(
             permission.model_dump(by_alias=True, exclude=["id"])
         )
-        return result.inserted_id
+        return inserted_id
 
     async def update(self, id: str, update_data: dict) -> bool:
-        result = await self._db_ops.update_one(
+        modified_count = await self._db_ops.update_one(
             {"_id": ObjectId(id)}, {"$set": update_data}
         )
-        return result.modified_count > 0
+        return modified_count > 0
 
     async def delete_one(self, id: str) -> bool:
-        result = await self._db_ops.delete_one({"_id": ObjectId(id)})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_one({"_id": ObjectId(id)})
+        return deleted_count > 0
 
     async def delete_one_by_code(self, code: str) -> bool:
-        result = await self._db_ops.delete_one({"code": code})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_one({"code": code})
+        return deleted_count > 0
 
     async def delete_all(self) -> bool:
-        result = await self._db_ops.delete_many({})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_many({})
+        return deleted_count > 0

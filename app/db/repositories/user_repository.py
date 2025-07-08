@@ -48,15 +48,15 @@ class UserRepository:
 
     async def create(self, user: UserModel) -> str:
         user_dict = user.model_dump(by_alias=True, exclude={"id"})
-        result = await self._db_ops.insert_one(user_dict)
-        return str(result.inserted_id)
+        inserted_id = await self._db_ops.insert_one(user_dict)
+        return str(inserted_id)
 
     async def update(self, user_id: str, update_data: dict) -> bool:
-        result = await self._db_ops.update_one(
+        modified_count = await self._db_ops.update_one(
             {"_id": ObjectId(user_id)}, {"$set": update_data}
         )
-        return result.modified_count > 0
+        return modified_count > 0
 
     async def delete(self, user_id: str) -> bool:
-        result = await self._db_ops.delete_one({"_id": ObjectId(user_id)})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_one({"_id": ObjectId(user_id)})
+        return deleted_count > 0

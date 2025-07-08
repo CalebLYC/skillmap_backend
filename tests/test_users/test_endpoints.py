@@ -17,6 +17,32 @@ async def test_create_user(async_client):
     assert data["email"] == "alice@example.com"
 
 
+"""@pytest.mark.asyncio
+async def test_get_curent_user(authenticated_client):
+    response = await authenticated_client.get(f"/users/current")
+    assert response.status_code == 200
+    assert response.json()["email"] == "test@example.com""" ""
+
+
+"""@pytest.mark.asyncio
+async def test_get_all_users(admin_client):
+    payload = {
+        "first_name": "AlicBobe",
+        "last_name": "Builder",
+        "email": "bob@example.com",
+        "password": "secret123",
+        "phone_number": "90000000",
+    }
+    await admin_client.post("/users/", json=payload)
+    response = await admin_client.get(f"/users/")
+    json = response.json()
+    assert response.status_code == 200
+    assert isinstance(json, list)
+    assert len(json) > 0
+    assert json[0]["email"] == "bob@example.com
+""" """"""
+
+
 @pytest.mark.asyncio
 async def test_get_user(async_client):
     payload = {

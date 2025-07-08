@@ -1,7 +1,8 @@
+from typing import List
 import pytest
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
-from app.schemas.user import UserCreateSchema, UserUpdateSchema
+from app.schemas.user import UserCreateSchema, UserReadSchema, UserUpdateSchema
 from app.db.repositories.user_repository import UserRepository
 from app.services.auth.user_service import UserService
 from tests.common.fake_db import FakeDB
@@ -30,6 +31,23 @@ async def test_create_user(service):
     user = await service.create_user(user_data)
     assert user.first_name == "John"
     assert user.email == "john@example.com"
+
+
+@pytest.mark.asyncio
+async def test_list_user(service):
+    user_data = UserCreateSchema(
+        first_name="Jane",
+        last_name="Doe",
+        email="jane@example.com",
+        password="pass",
+        phone_number="90000000",
+    )
+    await service.create_user(user_data)
+    fetched = await service.list_users()
+    assert isinstance(fetched, list)
+    assert len(fetched) > 0
+    assert isinstance(fetched[0], UserReadSchema)
+    assert fetched[0].email == "jane@example.com"
 
 
 @pytest.mark.asyncio

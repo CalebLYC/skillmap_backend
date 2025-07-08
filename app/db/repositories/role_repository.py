@@ -29,31 +29,31 @@ class RoleRepository:
         return [RoleModel(**doc) for doc in docs]
 
     async def create(self, role: RoleModel) -> str:
-        result = await self._db_ops.insert_one(
+        inserted_id = await self._db_ops.insert_one(
             role.model_dump(by_alias=True, exclude=["id"])
         )
-        if hasattr(result, "inserted_id") and result.inserted_id:
-            new_role_id = str(result.inserted_id)
-        else:
+        # if hasattr(result, "inserted_id") and result.inserted_id:
+        new_role_id = str(inserted_id)
+        """else:
             raise HTTPException(
                 status_code=500, detail="Failed to retrieve ID of created role."
-            )
+            )"""
         return new_role_id
 
     async def update(self, role_id: str, update_data: dict) -> bool:
-        result = await self._db_ops.update_one(
+        modified_count = await self._db_ops.update_one(
             {"_id": ObjectId(role_id)}, {"$set": update_data}
         )
-        return result.modified_count > 0
+        return modified_count > 0
 
     async def delete_one(self, id: str) -> bool:
-        result = await self._db_ops.delete_one({"_id": ObjectId(id)})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_one({"_id": ObjectId(id)})
+        return deleted_count > 0
 
     async def delete_one_by_name(self, name: str) -> bool:
-        result = await self._db_ops.delete_one({"name": name})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_one({"name": name})
+        return deleted_count > 0
 
     async def delete_all(self) -> bool:
-        result = await self._db_ops.delete_many({})
-        return result.deleted_count > 0
+        deleted_count = await self._db_ops.delete_many({})
+        return deleted_count > 0
