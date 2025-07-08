@@ -1,6 +1,6 @@
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import Settings
+from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
 from app.db.repositories.permission_repository import PermissionRepository
 from app.models.Role import PermissionModel
@@ -13,8 +13,9 @@ async def seed_permissions():
     Cleans the existing permissions collection before seeding.
     """
     settings = Settings()
-    client = AsyncIOMotorClient(settings.database_uri)
-    db = client[settings.database_name]
+    # client = None
+    client = MongoClient(settings.database_uri, settings.database_name)
+    db = client.get_db()
     permissions_col = db.get_collection(DBCollections.PERMISSIONS)
 
     print("Seeding permissions...")

@@ -1,6 +1,6 @@
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import Settings
+from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
 from app.schemas.role import RoleCreateSchema
 from app.db.repositories.role_repository import RoleRepository
@@ -15,8 +15,9 @@ async def seed_roles():
     Cleans the existing roles collection before seeding.
     """
     settings = Settings()
-    client = AsyncIOMotorClient(settings.database_uri)
-    db = client[settings.database_name]
+    # client = None
+    client = MongoClient(settings.database_uri, settings.database_name)
+    db = client.get_db()
     roles_col = db.get_collection(DBCollections.ROLES)
 
     print("Seeding roles...")

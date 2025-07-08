@@ -9,3 +9,6 @@ class MongoClient:
 
     def get_db(self):
         return self.db
+
+    def close(self):
+        return self.client.close()

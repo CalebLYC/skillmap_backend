@@ -52,7 +52,7 @@ class AuthService:
     async def login(self, user: LoginRequestSchema) -> LoginResponseSchema:
         db_user = await self.user_repos.find_by_email(email=user.email)
         if not db_user:
-            raise HTTPException(status_code=404, detail="Email not found")
+            raise HTTPException(status_code=404, detail="Wrong credentials")
         is_auth = SecurityUtils.verify_password(
             hashed=db_user.password, plain=user.password
         )

@@ -1,9 +1,9 @@
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
 from faker import Faker
 import random
 import sys
 from app.core.config import Settings
+from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
 from app.db.repositories.permission_repository import PermissionRepository
 from app.schemas.user import UserCreateSchema
@@ -27,8 +27,9 @@ async def seed_users(num_fake_users: int = 0, clean_db: bool = True):
                          Defaults to True.
     """
     settings = Settings()
-    client = AsyncIOMotorClient(settings.database_uri)
-    db = client[settings.database_name]
+    # client = None
+    client = MongoClient(settings.database_uri, settings.database_name)
+    db = client.get_db()
     users_col = db.get_collection(DBCollections.USERS)
 
     print("Seeding users...")

@@ -1,4 +1,6 @@
 import pytest
+from app.db.repositories.permission_repository import PermissionRepository
+from app.db.repositories.role_repository import RoleRepository
 from app.schemas.user import UserCreateSchema, UserUpdateSchema
 from app.db.repositories.user_repository import UserRepository
 from app.services.auth.user_service import UserService
@@ -8,8 +10,12 @@ from tests.common.fake_db import FakeDB
 @pytest.fixture
 def service():
     db = FakeDB()
-    repo = UserRepository(db)
-    return UserService(repo)
+    user_repo = UserRepository(db)
+    role_repo = RoleRepository(db)
+    permission_repo = PermissionRepository(db)
+    return UserService(
+        user_repo=user_repo, role_repos=role_repo, permission_repos=permission_repo
+    )
 
 
 @pytest.mark.asyncio

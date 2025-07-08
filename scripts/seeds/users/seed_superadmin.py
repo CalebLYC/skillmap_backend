@@ -1,7 +1,6 @@
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import Settings
-from app.db.mongo_collections import DBCollections
+from app.db.mongo_client import MongoClient
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
 from app.schemas.user import UserCreateSchema
@@ -11,8 +10,9 @@ from app.services.auth.user_service import UserService
 
 async def seed_users():
     settings = Settings()
-    client = AsyncIOMotorClient(settings.database_uri)
-    db = client[settings.database_name]
+    # client = None
+    client = MongoClient(settings.database_uri, settings.database_name)
+    db = client.get_db()
 
     user_repo = UserRepository(db)
     role_repo = RoleRepository(db)
