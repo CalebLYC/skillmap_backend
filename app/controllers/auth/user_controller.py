@@ -6,16 +6,13 @@ from app.models.User import UserModel
 from app.schemas.role import AssignPermissionSchema, AssignRolesSchema
 from app.schemas.user import UserCreateSchema, UserUpdateSchema, UserReadSchema
 from app.services.auth.user_service import UserService
+from app.utils.constants import http_status
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
     dependencies=[],
-    responses={
-        404: {"description": "Not found"},
-        401: {"description": "Not authenticated"},
-        403: {"description": "Forbidden"},
-    },
+    responses=http_status.router_responses,
 )
 
 

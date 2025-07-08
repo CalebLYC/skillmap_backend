@@ -10,17 +10,14 @@ from app.schemas.auth_schema import (
 )
 from app.schemas.user import UserReadSchema
 from app.services.auth.auth_service import AuthService
+from app.utils.constants import http_status
 
 
 # Router
 router = APIRouter(
     tags=["Auth"],
     dependencies=[],
-    responses={
-        404: {"description": "Not found"},
-        401: {"description": "Not authenticated"},
-        403: {"description": "Forbidden"},
-    },
+    responses=http_status.router_responses,
 )
 
 

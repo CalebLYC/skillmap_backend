@@ -10,17 +10,14 @@ from app.schemas.role import (
     RoleCreateSchema,
 )
 from app.services.auth.role_service import RoleService
+from app.utils.constants import http_status
 
 
 router = APIRouter(
     prefix="/roles",
     tags=["Roles"],
     dependencies=[],
-    responses={
-        404: {"description": "Not found"},
-        401: {"description": "Not authenticated"},
-        403: {"description": "Forbidden"},
-    },
+    responses=http_status.router_responses,
 )
 
 

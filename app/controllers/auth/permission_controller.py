@@ -9,17 +9,14 @@ from app.schemas.role import (
     PermissionUpdateSchema,
 )
 from app.services.auth.permission_service import PermissionService
+from app.utils.constants import http_status
 
 
 router = APIRouter(
     prefix="/permissions",
     tags=["Permissions"],
     dependencies=[require_role("user")],
-    responses={
-        404: {"description": "Not found"},
-        401: {"description": "Not authenticated"},
-        403: {"description": "Forbidden"},
-    },
+    responses=http_status.router_responses,
 )
 
 
