@@ -9,14 +9,15 @@ from tests.common.fake_db import FakeDB
 
 
 @pytest.fixture
-def service():
-    db = FakeDB()
-    user_repo = UserRepository(db)
-    role_repo = RoleRepository(db)
-    permission_repo = PermissionRepository(db)
+def service(shared_fake_db):
+    #db = FakeDB()
+    user_repo = UserRepository(shared_fake_db)
+    role_repo = RoleRepository(shared_fake_db)
+    permission_repo = PermissionRepository(shared_fake_db)
     return UserService(
         user_repo=user_repo, role_repos=role_repo, permission_repos=permission_repo
     )
+
 
 
 @pytest.mark.asyncio

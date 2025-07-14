@@ -1,8 +1,11 @@
 from httpx import ASGITransport, AsyncClient
 import pytest
 import pytest_asyncio
+from app.db.repositories.permission_repository import PermissionRepository
+from app.db.repositories.role_repository import RoleRepository
 from app.providers.providers import get_db
 from app.main import app
+from app.services.auth.role_service import RoleService
 from tests.common.fake_db import FakeDB
 
 
@@ -33,6 +36,16 @@ def clean_db(shared_fake_db):
     shared_fake_db.collections.clear()
     yield
     # Pas besoin de nettoyer après, le prochain test le fera
+
+
+@pytest.fixture
+def role_service(shared_fake_db):
+    role_repo = RoleRepository(shared_fake_db)
+    permission_repo = PermissionRepository(shared_fake_db)
+    return RoleService(
+        role_repos=role_repo, permission_repos=permission_repo
+    )
+
 
 
 @pytest_asyncio.fixture
