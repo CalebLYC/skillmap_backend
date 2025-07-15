@@ -53,7 +53,7 @@ class RoleService:
             raise HTTPException(status_code=403, detail="Unauthorized")
         return True
 
-    async def get_role_by_code(self, role_name: str) -> RoleReadSchema | None:
+    async def get_role_by_name(self, role_name: str) -> RoleReadSchema | None:
         try:
             role = await self.role_repos.find_by_name(name=role_name)
             if not role:

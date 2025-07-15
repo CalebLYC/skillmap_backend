@@ -40,9 +40,9 @@ class RoleRepository:
             )"""
         return new_role_id
 
-    async def update(self, role_id: str, update_data: dict) -> bool:
+    async def update(self, id: str, update_data: dict) -> bool:
         modified_count = await self._db_ops.update_one(
-            {"_id": ObjectId(role_id)}, {"$set": update_data}
+            {"_id": ObjectId(id)}, {"$set": update_data}
         )
         return modified_count > 0
 
