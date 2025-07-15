@@ -120,10 +120,15 @@ class FakeCollection:
             return True
         for key, value in filter.items():
             if key == "_id":
-                # Special handling for _id to match both ObjectId and string forms
                 if self._normalize_id(doc.get("_id")) != self._normalize_id(value):
                     return False
-            elif doc.get(key) != value:  # Simple equality check
+            elif isinstance(value, dict) and "$in" in value:
+                # Handle $in operator: {"field": {"$in": ["val1", "val2"]}}
+                field_value = doc.get(key)
+                in_list = value["$in"]
+                if field_value not in in_list:
+                    return False
+            elif doc.get(key) != value:
                 return False
         return True
 

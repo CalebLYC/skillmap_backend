@@ -288,6 +288,7 @@ class RoleService:
                 codes=permissions_to_add
             )
             existing_permission_codes = {p.code for p in existing_permissions}
+            # print(f"print {existing_permission_codes}")
 
             for perm_code in permissions_to_add:
                 if perm_code not in existing_permission_codes:
@@ -302,7 +303,7 @@ class RoleService:
 
             update_data = {"permissions": list(current_permissions)}
             updated = await self.role_repos.update(
-                role_id=str(role.id), update_data=update_data
+                id=str(role.id), update_data=update_data
             )
 
             if not updated:
@@ -386,7 +387,7 @@ class RoleService:
 
             update_data = {"inherited_roles": list(current_inherited_roles)}
             updated = await self.role_repos.update(
-                role_id=str(main_role.id), update_data=update_data
+                id=str(main_role.id), update_data=update_data
             )
 
             if not updated:
@@ -440,7 +441,7 @@ class RoleService:
 
             update_data = {"permissions": list(current_permissions)}
             updated = await self.role_repos.update(
-                role_id=str(role.id), update_data=update_data
+                id=str(role.id), update_data=update_data
             )
 
             if not updated:
@@ -496,7 +497,7 @@ class RoleService:
 
             update_data = {"inherited_roles": list(current_inherited_roles)}
             updated = await self.role_repos.update(
-                role_id=str(main_role.id), update_data=update_data
+                id=str(main_role.id), update_data=update_data
             )
 
             if not updated:
@@ -546,14 +547,16 @@ class RoleService:
                         queue.append(inherited_from_current)
         return False  # No circular dependency
 
-    async def _check_circular_inheritance(
+    """async def _check_circular_inheritance(
         self, start_role_name: str, target_role_name: str
     ) -> bool:
         """
-        Helper function to check for circular inheritance.
+
+
+"""      Helper function to check for circular inheritance.
         Performs a DFS-like traversal to see if target_role_name is reachable from start_role_name.
         """
-        visited: Set[str] = set()
+"""    visited: Set[str] = set()
         queue: List[str] = [start_role_name]
 
         while queue:
@@ -572,4 +575,4 @@ class RoleService:
                 for inherited_from_current in current_role.inherited_roles:
                     if inherited_from_current not in visited:
                         queue.append(inherited_from_current)
-        return False  # No circular dependency
+        return False  # No circular dependency"""

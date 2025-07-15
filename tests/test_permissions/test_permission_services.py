@@ -128,5 +128,5 @@ async def test_get_all__ensure_has_permissions(permission_service, role_service)
     assert is_perm is True
     assert has_perm is True
     assert len(perms) == 2
-    assert perms[0] == "users:read"
-    assert perms[1] == "users:delete"
+    assert "users:read" in perms
+    assert "users:delete" in perms
