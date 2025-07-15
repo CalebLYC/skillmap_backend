@@ -15,7 +15,7 @@ from app.utils.constants import http_status
 router = APIRouter(
     prefix="/permissions",
     tags=["Permissions"],
-    dependencies=[require_role("user")],
+    #dependencies=[require_role("user")],
     responses=http_status.router_responses,
 )
 
@@ -59,7 +59,7 @@ async def get_permission(
 @router.put(
     "/{id}",
     response_model=PermissionReadSchema,
-    summary="Get a permission",
+    summary="Update a permission",
 )
 async def update_permission(
     permission: PermissionUpdateSchema = Body(...),

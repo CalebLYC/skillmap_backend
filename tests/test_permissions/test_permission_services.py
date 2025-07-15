@@ -73,7 +73,7 @@ async def test_delete_all_permissions(service):
     assert result is None
 
 @pytest.mark.asyncio
-async def test_get_all_has_permissions(service,role_service):
+async def test_get_all__ensure_has_permissions(service,role_service):
     permission_data = PermissionCreateSchema(code="users:read",description="Permission to read users")
     await service.create_permission(permission=permission_data)
     await role_service.create_role(RoleCreateSchema(name="user", permissions=["users:read"]))
@@ -88,7 +88,10 @@ async def test_get_all_has_permissions(service,role_service):
     perms = await service.get_all_permissions(user)
     perms = list(perms)
     has_perm = await service.has_permission(user, "users:read")
+    is_perm = await service.ensure_permission(user, "users:read")
+    assert is_perm is True
     assert has_perm is True
     assert len(perms) == 2
     assert perms[0] == "users:read"
     assert perms[1] == "users:delete"
+

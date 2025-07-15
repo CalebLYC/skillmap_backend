@@ -60,7 +60,7 @@ async def get_role(
 @router.put(
     "/{id}",
     response_model=RoleReadSchema,
-    summary="Get a role",
+    summary="Update a role",
 )
 async def update_role(
     role: RoleUpdateSchema = Body(...),
