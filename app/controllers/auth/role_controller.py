@@ -70,7 +70,7 @@ async def update_role(
     return await service.update_role(role_id=id, role_update=role)
 
 
-@router.put(
+"""@router.put(
     "/{id}/permissions",
     response_model=RoleReadSchema,
     summary="Assign permissions to role",
@@ -80,7 +80,7 @@ async def update_role(
     id: str = Path(..., min_length=24, max_length=24),
     service: RoleService = Depends(get_role_service),
 ):
-    return await service.update_role(role_id=id, role_update=role)
+    return await service.update_role(role_id=id, role_update=role)"""
 
 
 @router.delete("/{id}", summary="Delete a role", status_code=status.HTTP_204_NO_CONTENT)
