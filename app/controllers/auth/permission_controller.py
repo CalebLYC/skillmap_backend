@@ -15,7 +15,7 @@ from app.utils.constants import http_status
 router = APIRouter(
     prefix="/permissions",
     tags=["Permissions"],
-    #dependencies=[require_role("user")],
+    dependencies=[require_role("admin")],
     responses=http_status.router_responses,
 )
 

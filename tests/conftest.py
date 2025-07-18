@@ -3,6 +3,8 @@ import pytest
 import pytest_asyncio
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
+from app.models.User import UserModel
+from app.providers.auth_provider import auth_middleware
 from app.providers.providers import get_db
 from app.main import app
 from app.services.auth.permission_service import PermissionService
@@ -61,3 +63,48 @@ async def async_client(shared_fake_db):
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def auth_async_client(async_client):
+    app.dependency_overrides[auth_middleware] = lambda: UserModel(
+        id="test_user_id",
+        email="test@example.com",
+        first_name="User",
+        last_name="Test",
+        password="testpasswordencrypted",
+        roles=["user"],
+    )
+
+    yield async_client
+
+
+@pytest_asyncio.fixture
+async def admin_async_client(async_client):
+    payload = {"name": "admin"}
+    response = await async_client.post("/roles/", json=payload)
+    assert response.status_code == 201
+    app.dependency_overrides[auth_middleware] = lambda: UserModel(
+        id="test_user_id",
+        email="admin@example.com",
+        first_name="Admin",
+        last_name="Test",
+        password="testpasswordencrypted",
+        roles=["admin"],
+    )
+
+    yield async_client
+
+
+@pytest_asyncio.fixture
+async def super_async_client(async_client):
+    app.dependency_overrides[auth_middleware] = lambda: UserModel(
+        id="superadmin_user_id",
+        email="superadmin@example.com",
+        first_name="Superadmin",
+        last_name="Test",
+        password="testpasswordencrypted",
+        roles=["superadmin"],
+    )
+
+    yield async_client

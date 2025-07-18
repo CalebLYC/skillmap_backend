@@ -61,6 +61,20 @@ async def test_get_user(async_client):
 
 
 @pytest.mark.asyncio
+async def test_get_current_user(auth_async_client):
+    response = await auth_async_client.get(f"/users/current")
+    assert response.status_code == 200
+    assert response.json()["email"] == "test@example.com"
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_without_authentication(async_client):
+    response = await async_client.get(f"/users/current")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Not authenticated"
+
+
+@pytest.mark.asyncio
 async def test_update_user(async_client):
     payload = {
         "first_name": "Charles",

@@ -219,3 +219,45 @@ async def test_inherited_role_circular_dependency(async_client):
         f"/roles/{admin_created_data['id']}/inherit", json=inherited_user_role_payload
     )
     assert user_response.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_role_permission_not_exist(async_client):
+    # Attempt to add a non-existent permission to a role
+    payload = {"name": "user"}
+    create_response = await async_client.post("/roles/", json=payload)
+    assert create_response.status_code == 201
+    created_data = create_response.json()
+
+    update_payload = {"permissions": ["non_existent_permission"]}
+    response = await async_client.patch(
+        f"/roles/{created_data['id']}/permissions", json=update_payload
+    )
+    assert response.status_code == 400
+    data = response.json()
+    assert (
+        data["detail"]
+        == "Permission 'non_existent_permission' not found. Please create it first."
+    )
+
+
+@pytest.mark.asyncio
+async def test_role_not_exist(async_client):
+    # Attempt to get a non-existent role
+    response = await async_client.get("/roles/999999")
+    assert response.status_code == 422
+    # data = response.json()
+    # assert data["detail"] == "Role not found"
+    response = await async_client.get("/roles/687a84a6baa4636cc28e9424")
+    assert response.status_code == 404
+    data = response.json()
+    assert data["detail"] == "Error getting role: Role not found"
+
+    # Attempt to update a non-existent role
+    update_payload = {"name": "non_existent_role"}
+    response = await async_client.put("/roles/999999", json=update_payload)
+    assert response.status_code == 422
+
+    # Attempt to delete a non-existent role
+    response = await async_client.delete("/roles/687a84a6baa4636cc28e9424")
+    assert response.status_code == 404
