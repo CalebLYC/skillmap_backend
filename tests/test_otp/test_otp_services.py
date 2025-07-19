@@ -70,6 +70,7 @@ async def test_request_otp_success(
 
     assert isinstance(response, OTPResponseSchema)
     assert response.detail.startswith("OTP sent successfully")
+    assert response.otp_id is not None
 
 
 @pytest.mark.asyncio
