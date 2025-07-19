@@ -37,4 +37,6 @@ app.include_router(permission_controller.router)
 # Endpoint racine
 @app.get("/")
 async def root():
-    return {"msg": "Application de suivi et de gestion des compétences. Retrouvez la documentation sur '/docs'"}
+    return {
+        "msg": "Application de suivi et de gestion des compétences. Retrouvez la documentation sur '/docs'"
+    }
