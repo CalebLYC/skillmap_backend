@@ -67,10 +67,18 @@ class OTPService:
             otp_id=str(db_otp.id),
         )
 
-    async def verify_otp(self, otp_verify: OTPVerifySchema) -> OTPResponseSchema:
+    async def verify_otp(self, otp_verify: OTPVerifySchema) -> OTPVerifyResponseSchema:
         """
         Vérifie un OTP fourni par l'utilisateur.
         """
+        # Vérifier si l'utilisateur existe
+        user = await self.user_repos.find_by_email(email=otp_verify.email)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User with this email not found.",
+            )
+
         otp_record = await self.otp_repos.find_by_email_and_code(
             email=otp_verify.email, code=otp_verify.code
         )
@@ -84,6 +92,7 @@ class OTPService:
         if otp_record.is_expired():
             # Marquer comme utilisé/expiré si ce n'est pas déjà fait
             await self.otp_repos.mark_as_used(str(otp_record.id))
+            otp_record.is_used = True
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="OTP has expired."
             )
@@ -96,8 +105,17 @@ class OTPService:
 
         # Marquer l'OTP comme utilisé après vérification réussie
         await self.otp_repos.mark_as_used(str(otp_record.id))
+        otp_record.is_used = True
 
-        user = await self.user_repos.find_by_email(email=otp_verify.email)
+        # Mettre à jour l'utilisateur pour le marquer comme vérifié
+        success = await self.user_repos.update(
+            user.id, {"is_verified": True, "is_active": True}
+        )
+        if success:
+            user.is_active = True
+            user.is_verified = True
+        else:
+            raise HTTPException(status_code=409, detail="User already verified")
 
         return OTPVerifyResponseSchema(
             detail="OTP verified successfully.",

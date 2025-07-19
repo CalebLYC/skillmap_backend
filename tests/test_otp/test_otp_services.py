@@ -114,13 +114,27 @@ async def test_verify_otp_success(otp_service: OTPService, user_service: UserSer
 
     assert isinstance(response, OTPVerifyResponseSchema)
     assert response.detail == "OTP verified successfully."
+    assert response.user.is_verified is True
+    assert response.user.is_active is True
+    assert response.otp.is_used is True
 
 
 @pytest.mark.asyncio
-async def test_verify_otp_invalid_code(otp_service: OTPService):
+async def test_verify_otp_invalid_code(
+    otp_service: OTPService, user_service: UserService
+):
     """
     Teste la vérification d'OTP avec un code invalide (non trouvé en base).
     """
+
+    user_data = UserCreateSchema(
+        first_name="John",
+        last_name="Doe",
+        email="test@example.com",
+        password="secret",
+        phone_number="90000000",
+    )
+    await user_service.create_user(user_data)
 
     verify_schema = OTPVerifySchema(email="test@example.com", code="000000")
 
@@ -132,12 +146,18 @@ async def test_verify_otp_invalid_code(otp_service: OTPService):
 
 
 @pytest.mark.asyncio
-async def test_verify_otp_expired(
-    otp_service: OTPService,
-):
+async def test_verify_otp_expired(otp_service: OTPService, user_service: UserService):
     """
     Teste la vérification d'OTP avec un code expiré.
     """
+    user_data = UserCreateSchema(
+        first_name="John",
+        last_name="Doe",
+        email="test@gmail.com",
+        password="secret",
+        phone_number="90000000",
+    )
+    await user_service.create_user(user_data)
 
     verify_schema = OTPVerifySchema(email="test@gmail.com", code="123456")
 
@@ -150,11 +170,19 @@ async def test_verify_otp_expired(
 
 @pytest.mark.asyncio
 async def test_verify_otp_already_used(
-    otp_service: OTPService,
+    otp_service: OTPService, user_service: UserService
 ):
     """
     Teste la vérification d'OTP avec un code déjà utilisé.
     """
+    user_data = UserCreateSchema(
+        first_name="John",
+        last_name="Doe",
+        email="test@gmail.com",
+        password="secret",
+        phone_number="90000000",
+    )
+    await user_service.create_user(user_data)
 
     verify_schema = OTPVerifySchema(email="test@gmail.com", code="123456")
 
@@ -163,3 +191,19 @@ async def test_verify_otp_already_used(
 
     assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
     assert exc_info.value.detail.startswith("Invalid OTP")
+
+
+@pytest.mark.asyncio
+async def test_verify_otp_with_inexistant_user(
+    otp_service: OTPService,
+):
+    """
+    Teste la vérification d'OTP avec un utilisateur inexistant.
+    """
+    verify_schema = OTPVerifySchema(email="test@gmail.com", code="123456")
+
+    with pytest.raises(HTTPException) as exc_info:
+        await otp_service.verify_otp(verify_schema)
+
+    assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+    assert exc_info.value.detail.startswith("User with this email not found")

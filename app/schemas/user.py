@@ -46,6 +46,8 @@ class UserUpdateSchema(BaseModel):
     phone_nulber: Optional[str] = Field(default=None)
     sex: Optional[SexEnum] = Field(default=None)
     birthday_date: Optional[datetime.datetime] = Field(default=None)
+    is_active: Optional[bool] = Field(default=None)
+    is_verified: Optional[bool] = Field(default=None)
     roles: Optional[List[str]] = Field(default=None)
     permissions: Optional[List[str]] = Field(default=None)
 
@@ -60,6 +62,10 @@ class UserUpdateSchema(BaseModel):
                 "phone_number": "90000000",
                 "sex": "M|F",
                 "birthday_date": "2004-01-01",
+                "roles": ["user"],
+                "permissions": ["user:read"],
+                "is_active": True,
+                "is_verified": True,
             }
         },
     )
@@ -76,6 +82,8 @@ class UserReadSchema(BaseModel):
     created_at: Optional[datetime.datetime] = Field(default=None)
     roles: List[str] = Field(default=[])
     permissions: List[str] = Field(default=[])
+    is_active: bool = Field(default=True)
+    is_verified: bool = Field(default=False)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -96,6 +104,8 @@ class UserReadSchema(BaseModel):
                 "permissions": ["user:read"],
                 "birthday_date": "2004-01-01",
                 "created_at": "20025-01-01",
+                "is_active": True,
+                "is_verified": True,
             }
         },
     )

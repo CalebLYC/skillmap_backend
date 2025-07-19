@@ -29,6 +29,8 @@ class UserModel(BaseModel):
     sex: Optional[SexEnum] = Field(default=None)
     roles: List[str] = Field(default=[])
     permissions: List[str] = Field(default=[])
+    is_active: bool = Field(default=True)
+    is_verified: bool = Field(default=False)
     birthday_date: Optional[datetime.datetime] = Field(default=None)
     created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
@@ -50,6 +52,8 @@ class UserModel(BaseModel):
                 "birthday_date": "2004-01-01",
                 "roles": ["user"],
                 "permissions": ["user:read"],
+                "is_active": True,
+                "is_verified": True,
                 "created_at": "20025-01-01",
             }
         },
