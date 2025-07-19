@@ -1,4 +1,3 @@
-from typing import List
 import pytest
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
@@ -10,14 +9,13 @@ from tests.common.fake_db import FakeDB
 
 @pytest.fixture
 def service(shared_fake_db):
-    #db = FakeDB()
+    # db = FakeDB()
     user_repo = UserRepository(shared_fake_db)
     role_repo = RoleRepository(shared_fake_db)
     permission_repo = PermissionRepository(shared_fake_db)
     return UserService(
         user_repo=user_repo, role_repos=role_repo, permission_repos=permission_repo
     )
-
 
 
 @pytest.mark.asyncio

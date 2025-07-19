@@ -6,3 +6,4 @@ class DBCollections:
     ROLES = "roles"
     PERMISSIONS = "permissions"
     TOKENS = "tokens"
+    OTPS = "otps"

@@ -1,6 +1,7 @@
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+from app.db.repositories.otp_repository import OTPRepository
 from app.providers.providers import get_db
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.permission_repository import PermissionRepository
@@ -22,3 +23,7 @@ def get_permission_repository(db: AsyncIOMotorDatabase = Depends(get_db)):
 
 def get_access_token_repository(db: AsyncIOMotorDatabase = Depends(get_db)):
     return AccessTokenRepository(db=db)
+
+
+def get_otp_repository(db: AsyncIOMotorDatabase = Depends(get_db)):
+    return OTPRepository(db=db)
