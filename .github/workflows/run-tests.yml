@@ -25,4 +25,5 @@ jobs:
 
     - name: Run tests
       run: |
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/app
         pytest tests/ -v --color=yes
