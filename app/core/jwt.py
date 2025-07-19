@@ -22,7 +22,7 @@ class JWTUtils:
         if JWTUtils._settings is None:
             JWTUtils()
         to_encode = data.copy()
-        expire = datetime.datetime.utcnow() + (
+        expire = datetime.datetime.now(datetime.timezone.utc) + (
             expires_delta
             if expires_delta
             else datetime.timedelta(

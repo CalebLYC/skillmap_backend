@@ -30,13 +30,13 @@ class AuthService:
     ) -> str:
         expire = None
         if expires_in_minutes:
-            expire = datetime.datetime.utcnow() + datetime.timedelta(
+            expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
                 minutes=expires_in_minutes
             )
         payload = {
             "sub": user_id,
             "exp": expire if expire else None,
-            "iat": datetime.datetime.utcnow(),
+            "iat": datetime.datetime.now(datetime.timezone.utc),
         }
         token, expires_at = JWTUtils.create_access_token(
             data=payload, expires_delta=expire if expire else None
