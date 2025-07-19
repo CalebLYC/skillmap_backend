@@ -69,7 +69,10 @@ class AuthService:
                 raise HTTPException(
                     status_code=400, detail="Password not match password confirmation"
                 )
+        # Hash the password before saving
+        hashed_password = SecurityUtils.hash_password(user.password)
         user_doc = UserModel.model_validate(user)
+        user_doc.password = hashed_password
         inserted_id = await self.user_repos.create(user_doc)
         db_user = await self.user_repos.find_by_id(user_id=inserted_id)
         token_id = await self.generate_access_token(user_id=db_user.id)

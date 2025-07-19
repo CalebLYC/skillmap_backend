@@ -80,31 +80,87 @@ async def auth_async_client(async_client):
 
 
 @pytest_asyncio.fixture
-async def admin_async_client(async_client):
-    payload = {"name": "admin"}
-    response = await async_client.post("/roles/", json=payload)
+async def very_auth_async_client(async_client):
+    payload = {
+        "email": "test@example.com",
+        "first_name": "User",
+        "last_name": "Test",
+        "password": "testpasswordencrypted",
+        "roles": ["user"],
+    }
+    response = await async_client.post("register", json=payload)
     assert response.status_code == 201
-    app.dependency_overrides[auth_middleware] = lambda: UserModel(
-        id="test_user_id",
-        email="admin@example.com",
-        first_name="Admin",
-        last_name="Test",
-        password="testpasswordencrypted",
-        roles=["admin"],
+    user_data = response.json()["user"]
+    user = UserModel(
+        id=user_data["id"],
+        email=user_data["email"],
+        roles=user_data["roles"],
+        first_name=user_data["first_name"],
+        last_name=user_data["last_name"],
+        created_at=user_data["created_at"],
+        birthday_date=user_data["birthday_date"],
+        phone_number=user_data["phone_number"],
+        password="fake_encrypted_password",  # Simulate encrypted password
     )
+
+    app.dependency_overrides[auth_middleware] = lambda: user
 
     yield async_client
 
 
 @pytest_asyncio.fixture
-async def super_async_client(async_client):
-    app.dependency_overrides[auth_middleware] = lambda: UserModel(
-        id="superadmin_user_id",
-        email="superadmin@example.com",
-        first_name="Superadmin",
-        last_name="Test",
-        password="testpasswordencrypted",
-        roles=["superadmin"],
+async def bypass_role_async_client(auth_async_client, monkeypatch):
+    # Patch require_role et ensure_role pour bypasser toutes vérifications de rôle
+    from app.providers import auth_provider
+    from app.services.auth.role_service import RoleService
+
+    monkeypatch.setattr(auth_provider, "require_role", lambda role_name: lambda: None)
+
+    async def always_true(self, user, role_name):
+        return True
+
+    monkeypatch.setattr(RoleService, "ensure_role", always_true)
+
+    yield auth_async_client
+
+
+@pytest_asyncio.fixture
+async def bypass_permission_async_client(auth_async_client, monkeypatch):
+    # Patch require_permission pour bypasser toutes vérifications de permission
+    from app.providers import auth_provider
+    from app.services.auth.permission_service import PermissionService
+
+    monkeypatch.setattr(
+        auth_provider, "require_permission", lambda permission_code: lambda: None
     )
 
-    yield async_client
+    async def always_true(self, user, permission_code):
+        return True
+
+    monkeypatch.setattr(PermissionService, "ensure_permission", always_true)
+
+    yield auth_async_client
+
+
+@pytest_asyncio.fixture
+async def bypass_role_and_permission_async_client(auth_async_client, monkeypatch):
+    # Patch require_role, require_permission, ensure_role, ensure_permission
+    from app.providers import auth_provider
+    from app.services.auth.role_service import RoleService
+    from app.services.auth.permission_service import PermissionService
+
+    monkeypatch.setattr(auth_provider, "require_role", lambda role_name: lambda: None)
+    monkeypatch.setattr(
+        auth_provider, "require_permission", lambda permission_code: lambda: None
+    )
+
+    async def always_true_role(self, user, role_name):
+        return True
+
+    async def always_true_perm(self, user, permission_code):
+        return True
+
+    monkeypatch.setattr(RoleService, "ensure_role", always_true_role)
+    monkeypatch.setattr(PermissionService, "ensure_permission", always_true_perm)
+
+    yield auth_async_client
