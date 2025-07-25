@@ -100,3 +100,34 @@ class ResetUserPasswordSchema(BaseModel):
             }
         },
     )
+
+
+class ChangeUserPasswordSchema(BaseModel):
+    """
+    Schéma pour changer un mot de passe.
+    """
+
+    old_password: str = Field(
+        ...,
+        description="L'ancien mot de passe.",
+    )
+    new_password: str = Field(
+        ...,
+        description="Le nouveau mot de passe.",
+    )
+    new_password_confirmation: Optional[str] = Field(
+        description="La confirmation du nouveau mot de passe.",
+        default=None,
+    )
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "new_password": "12345678",
+                "new_password_confirmation": "12345678",
+            }
+        },
+    )

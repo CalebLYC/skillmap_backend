@@ -4,12 +4,13 @@ from app.providers.auth_provider import auth_middleware
 from app.providers.service_provider import get_auth_service
 from app.models.User import UserModel
 from app.schemas.auth_schema import (
+    ChangeUserPasswordSchema,
     LoginRequestSchema,
     LoginResponseSchema,
     RegisterSchema,
     ResetUserPasswordSchema,
 )
-from app.schemas.user import UserReadSchema
+from app.schemas.user import UserReadSchema, UserUpdateSchema
 from app.services.auth.auth_service import AuthService
 from app.utils.constants import http_status
 
@@ -72,8 +73,8 @@ async def delete_user(
     return {"detail": "User deleted"}
 
 
-@router.post(
-    "/user/password/reset",
+@router.patch(
+    "/current/password/reset",
     response_model=LoginResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Reset a user password.",
@@ -81,8 +82,35 @@ async def delete_user(
 async def verify_otp_endpoint(
     user_request: ResetUserPasswordSchema,
     service: AuthService = Depends(get_auth_service),
+    logout: bool = False,
 ):
     """
     Verifies the provided OTP code for a given email address and the reset the password.
     """
-    return await service.reset_user_password(user_request=user_request)
+    return await service.reset_user_password(user_request=user_request, logout=logout)
+
+
+@router.put(
+    "/current/update", response_model=UserReadSchema, summary="Update the current user"
+)
+async def update_user(
+    current_user: UserModel = Depends(auth_middleware),
+    user_update: UserUpdateSchema = ...,
+    service: AuthService = Depends(get_auth_service),
+    logout: bool = False,
+):
+    return await service.update_user(current_user, user_update, logout=logout)
+
+
+@router.patch(
+    "/current/password/update",
+    response_model=LoginResponseSchema,
+    summary="Change the current user password",
+)
+async def update_user(
+    current_user: UserModel = Depends(auth_middleware),
+    user_update: ChangeUserPasswordSchema = ...,
+    service: AuthService = Depends(get_auth_service),
+    logout: bool = True,
+):
+    return await service.change_password(current_user, user_update, logout=logout)

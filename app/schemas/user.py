@@ -43,7 +43,7 @@ class UserUpdateSchema(BaseModel):
     password: Optional[str] = Field(default=None)
     first_name: Optional[str] = Field(default=None)
     last_name: Optional[str] = Field(default=None)
-    phone_nulber: Optional[str] = Field(default=None)
+    phone_number: Optional[str] = Field(default=None)
     sex: Optional[SexEnum] = Field(default=None)
     birthday_date: Optional[datetime.datetime] = Field(default=None)
     is_active: Optional[bool] = Field(default=None)

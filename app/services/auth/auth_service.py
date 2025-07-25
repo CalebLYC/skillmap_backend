@@ -11,6 +11,7 @@ from app.db.repositories.user_repository import UserRepository
 from app.models.AccessToken import AccessTokenModel
 from app.models.OTP import OTPModel, OTPTypeEnum
 from app.schemas.auth_schema import (
+    ChangeUserPasswordSchema,
     LoginRequestSchema,
     LoginResponseSchema,
     RegisterSchema,
@@ -18,7 +19,7 @@ from app.schemas.auth_schema import (
 )
 from app.models.User import UserModel
 from app.schemas.otp import OTPResponseSchema, OTPVerifyResponseSchema, OTPVerifySchema
-from app.schemas.user import UserReadSchema
+from app.schemas.user import UserReadSchema, UserUpdateSchema
 
 
 class AuthService:
@@ -150,7 +151,9 @@ class AuthService:
         )
 
     async def reset_user_password(
-        self, user_request: ResetUserPasswordSchema
+        self,
+        user_request: ResetUserPasswordSchema,
+        logout: bool = False,
     ) -> LoginResponseSchema:
         """
         Vérifie un OTP fourni par l'utilisateur et mets à jour son mot de passe.
@@ -187,8 +190,101 @@ class AuthService:
         await self.otp_repos.mark_as_used(str(otp_record.id))
         otp_record.is_used = True
 
+        if logout:
+            await self.logout(user_id=verify_reponse.user.id)
+
         updated = await self.user_repos.find_by_id(verify_reponse.user.id)
         token_id = await self.generate_access_token(user_id=verify_reponse.user.id)
+        access_token = await self.access_token_repos.find_by_id(id=token_id)
+        return_user = UserReadSchema.model_validate(updated)
+        return LoginResponseSchema(access_token=access_token, user=return_user)
+
+    async def update_user(
+        self,
+        user: UserModel,
+        user_update: UserUpdateSchema,
+        logout: bool = False,
+    ) -> UserReadSchema:
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        user_id = user.id
+
+        update_data = user_update.model_dump(exclude_unset=True)
+        if "email" in update_data:
+            existing = await self.user_repos.find_by_email(update_data["email"])
+            if existing and str(existing.id) != user_id:
+                raise HTTPException(status_code=400, detail="Email already registered")
+
+        if user_update.roles:
+            db_role_names = {r.name for r in await self.role_repos.list_roles()}
+            for role_name in user_update.roles:
+                if role_name not in db_role_names:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Role '{role_name}' not found. Please create it first.",
+                    )
+        if user_update.permissions:
+            db_permission_codes = {
+                p.code for p in await self.permission_repos.list_permissions()
+            }
+            for permission_code in user_update.permissions:
+                if permission_code not in db_permission_codes:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Permission '{permission_code}' not found. Please create it first.",
+                    )
+
+        if "password" in update_data:
+            update_data["password"] = SecurityUtils.hash_password(
+                update_data.pop("password")
+            )
+            if logout:
+                await self.logout(user_id=user_id)
+
+        success = await self.user_repos.update(user_id, update_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="Update failed")
+
+        updated = await self.user_repos.find_by_id(user_id)
+        return UserReadSchema.model_validate(updated)
+
+    async def change_password(
+        self,
+        user: UserModel,
+        user_update: ChangeUserPasswordSchema,
+        logout: bool = True,
+    ) -> UserReadSchema:
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        user_id = user.id
+
+        update_data = user_update.model_dump(exclude_unset=True)
+
+        is_auth = SecurityUtils.verify_password(
+            hashed=user.password, plain=user_update.old_password
+        )
+        if not is_auth:
+            raise HTTPException(status_code=401, detail="Wrong credentials")
+
+        if "new_password_confirmation" in update_data:
+            if user_update.new_password_confirmation != user_update.new_password:
+                raise HTTPException(
+                    status_code=400, detail="Password not match password confirmation"
+                )
+
+        update_data["password"] = SecurityUtils.hash_password(
+            update_data.pop("new_password")
+        )
+
+        success = await self.user_repos.update(user_id, update_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="Update failed")
+
+        if logout:
+            await self.logout(user_id=user_id)
+
+        updated = await self.user_repos.find_by_id(user_id)
+        token_id = await self.generate_access_token(user_id=user_id)
         access_token = await self.access_token_repos.find_by_id(id=token_id)
         return_user = UserReadSchema.model_validate(updated)
         return LoginResponseSchema(access_token=access_token, user=return_user)
