@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
+from freezegun import freeze_time
 import pytest
 from httpx import AsyncClient
 from fastapi import HTTPException, status
@@ -125,12 +127,11 @@ async def test_verify_otp_already_used(async_client: AsyncClient):
     )
 
 
-"""
 @pytest.mark.asyncio
 async def test_verify_otp_expired(async_client: AsyncClient):
     """
-# Teste la vérification d'OTP avec un code déjà utilisé.
-"""
+    # Teste la vérification d'OTP avec un code déjà utilisé.
+    """
     user_payload = {
         "first_name": "Alice",
         "last_name": "Borderland",
@@ -144,20 +145,12 @@ async def test_verify_otp_expired(async_client: AsyncClient):
     otp_payload = {"email": "test@example.com"}
     otp_response = await async_client.post("/otp/request", json=otp_payload)
 
-    # Simulate OTP expiration by waiting
-    with patch.object(
-        OTPService,
-        "verify_otp",
-        return_value=HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid OTP or OTP already used/expired.",
-        ),
-    ):
+    with freeze_time("2024-01-01 12:00:00") as frozen_time:
+        otp_response = await async_client.post("/otp/request", json=otp_payload)
+        frozen_time.tick(delta=timedelta(minutes=6))
+
         payload = {"email": "test@example.com", "code": otp_response.json()["code"]}
         response = await async_client.post("/otp/verify", json=payload)
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json()["detail"].startswith(
-            "Invalid OTP or OTP already used/expired"
-        )
-"""
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json()["detail"].startswith("OTP has expired")

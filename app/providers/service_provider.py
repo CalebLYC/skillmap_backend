@@ -1,5 +1,6 @@
 from fastapi import Depends
 from app.db.repositories.access_token_repository import AccessTokenRepository
+from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
 from app.db.repositories.user_repository import UserRepository
@@ -20,8 +21,13 @@ from app.services.auth.user_service import UserService
 def get_auth_service(
     user_repos: UserRepository = Depends(get_user_repository),
     access_token_repos: AccessTokenRepository = Depends(get_access_token_repository),
+    otp_repos: OTPRepository = Depends(get_otp_repository),
 ) -> AuthService:
-    return AuthService(user_repos=user_repos, access_token_repos=access_token_repos)
+    return AuthService(
+        user_repos=user_repos,
+        access_token_repos=access_token_repos,
+        otp_repos=otp_repos,
+    )
 
 
 def get_user_service(
@@ -50,7 +56,7 @@ def get_role_service(
 
 def get_otp_service(
     user_repos: UserRepository = Depends(get_user_repository),
-    otp_repos: RoleRepository = Depends(get_otp_repository),
+    otp_repos: OTPRepository = Depends(get_otp_repository),
 ) -> UserService:
     return OTPService(
         otp_repos=otp_repos,

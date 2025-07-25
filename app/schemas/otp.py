@@ -1,7 +1,8 @@
 import datetime
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import Optional
 
+from app.models.OTP import OTPTypeEnum
 from app.schemas.user import UserReadSchema
 
 
@@ -13,6 +14,22 @@ class OTPRequestSchema(BaseModel):
     email: EmailStr = Field(
         ..., description="L'adresse e-mail pour laquelle un OTP est demandé."
     )
+    type: Optional[OTPTypeEnum] = Field(
+        description="Le type du code OTP généré.",
+        default=OTPTypeEnum.VERIFY_USER,
+    )
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "email": "jdoe@example.com",
+                "type": "verify_user",
+            }
+        },
+    )
 
 
 class OTPVerifySchema(BaseModel):
@@ -23,6 +40,18 @@ class OTPVerifySchema(BaseModel):
     email: EmailStr = Field(..., description="L'adresse e-mail associée à l'OTP.")
     code: str = Field(
         ..., min_length=4, max_length=8, description="Le code OTP à vérifier."
+    )
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "email": "jdoe@example.com",
+                "code": "838162",
+            }
+        },
     )
 
 
@@ -50,6 +79,29 @@ class OTPResponseSchema(BaseModel):
     created_at: datetime.datetime = Field(
         default_factory=datetime.datetime.now,
         description="Date et heure de création de l'OTP.",
+    )
+    type: OTPTypeEnum = Field(
+        description="Le type du code OTP généré.",
+        default=OTPTypeEnum.VERIFY_USER,
+    )
+
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "detail": "OTP sent successfully to jdoe@example.com. It will expire in 5 minutes.",
+                "otp_id": "68839b57869a2157af64cf73",
+                "email": "jdoe@example.com",
+                "code": "838162",
+                "expires_at": "2025-07-25T15:02:27.685000",
+                "is_used": False,
+                "created_at": "2025-07-25T14:57:27.685000",
+                "type": "verify_user",
+            }
+        },
     )
 
 

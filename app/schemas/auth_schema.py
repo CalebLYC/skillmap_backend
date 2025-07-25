@@ -67,3 +67,36 @@ class RegisterSchema(BaseModel):
             }
         },
     )
+
+
+class ResetUserPasswordSchema(BaseModel):
+    """
+    Schéma pour reset un mot de passe oublié.
+    """
+
+    email: EmailStr = Field(..., description="L'adresse e-mail associée à l'OTP.")
+    code: str = Field(
+        ..., min_length=4, max_length=8, description="Le code OTP à vérifier."
+    )
+    new_password: Optional[str] = Field(
+        description="Le nouveau mot de passe.",
+        default=None,
+    )
+    new_password_confirmation: Optional[str] = Field(
+        description="La confirmation du nouveau mot de passe.",
+        default=None,
+    )
+    model_config = ConfigDict(
+        validate_by_name=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "email": "jdoe@example.com",
+                "code": "838162",
+                "new_password": "12345678",
+                "new_password_confirmation": "12345678",
+            }
+        },
+    )

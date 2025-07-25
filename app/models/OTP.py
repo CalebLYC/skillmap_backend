@@ -1,9 +1,15 @@
 import datetime
+from enum import Enum
 from typing_extensions import Annotated
 from pydantic import BaseModel, BeforeValidator, EmailStr, Field
 
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
+
+
+class OTPTypeEnum(str, Enum):
+    VERIFY_USER = "verify_user"
+    RESET_PASSWORD = "password_reset"
 
 
 class OTPModel(BaseModel):
@@ -25,6 +31,10 @@ class OTPModel(BaseModel):
     created_at: datetime.datetime = Field(
         default_factory=datetime.datetime.now,
         description="Date et heure de création de l'OTP.",
+    )
+    type: OTPTypeEnum = Field(
+        description="Le type du code OTP généré.",
+        default=OTPTypeEnum.VERIFY_USER,
     )
 
     class Config:

@@ -1,9 +1,10 @@
 import random
 import datetime
 from fastapi import HTTPException, status
+from app.core.security import SecurityUtils
 from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.user_repository import UserRepository
-from app.models.OTP import OTPModel
+from app.models.OTP import OTPModel, OTPTypeEnum
 from app.schemas.otp import (
     OTPRequestSchema,
     OTPVerifyResponseSchema,
@@ -46,11 +47,14 @@ class OTPService:
 
         # Créer le modèle OTP
         otp_model = OTPModel(
-            email=otp_request.email, code=otp_code, expires_at=expires_at
+            email=otp_request.email,
+            code=otp_code,
+            expires_at=expires_at,
+            type=otp_request.type,
         )
 
         # Enregistrer l'OTP en base de données
-        otp_id = await self.otp_repos.create(otp_model)
+        await self.otp_repos.create(otp_model)
         db_otp = await self.otp_repos.find_by_email_and_code(
             email=otp_request.email, code=otp_code
         )
@@ -67,7 +71,11 @@ class OTPService:
             otp_id=str(db_otp.id),
         )
 
-    async def verify_otp(self, otp_verify: OTPVerifySchema) -> OTPVerifyResponseSchema:
+    async def verify_otp(
+        self,
+        otp_verify: OTPVerifySchema,
+        otp_type: OTPTypeEnum = OTPTypeEnum.VERIFY_USER,
+    ) -> OTPVerifyResponseSchema:
         """
         Vérifie un OTP fourni par l'utilisateur.
         """
@@ -83,7 +91,7 @@ class OTPService:
             email=otp_verify.email, code=otp_verify.code
         )
 
-        if not otp_record:
+        if (not otp_record) or (otp_record.type != otp_type):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid OTP or OTP already used/expired.",
@@ -115,7 +123,8 @@ class OTPService:
             user.is_active = True
             user.is_verified = True
         else:
-            raise HTTPException(status_code=409, detail="User already verified")
+            if otp_type == OTPTypeEnum.VERIFY_USER:
+                raise HTTPException(status_code=409, detail="User already verified")
 
         return OTPVerifyResponseSchema(
             detail="OTP verified successfully.",

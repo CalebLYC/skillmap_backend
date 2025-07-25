@@ -102,7 +102,7 @@ class UserService:
                     )
 
         if "password" in update_data:
-            update_data["hashed_password"] = SecurityUtils.hash_password(
+            update_data["password"] = SecurityUtils.hash_password(
                 update_data.pop("password")
             )
 

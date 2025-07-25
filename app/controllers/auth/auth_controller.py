@@ -7,6 +7,7 @@ from app.schemas.auth_schema import (
     LoginRequestSchema,
     LoginResponseSchema,
     RegisterSchema,
+    ResetUserPasswordSchema,
 )
 from app.schemas.user import UserReadSchema
 from app.services.auth.auth_service import AuthService
@@ -69,3 +70,19 @@ async def delete_user(
 ):
     await service.logout(user_id=current_user.id)
     return {"detail": "User deleted"}
+
+
+@router.post(
+    "/user/password/reset",
+    response_model=LoginResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Reset a user password.",
+)
+async def verify_otp_endpoint(
+    user_request: ResetUserPasswordSchema,
+    service: AuthService = Depends(get_auth_service),
+):
+    """
+    Verifies the provided OTP code for a given email address and the reset the password.
+    """
+    return await service.reset_user_password(user_request=user_request)
