@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     """
 
     environment: str = Field(..., alias="ENV")
+    app_name: str = Field(..., alias="APP_NAME")
+    base_url: str = Field(..., alias="BASE_URL")
 
     # fallback généraux
     default_db_uri: str = Field(

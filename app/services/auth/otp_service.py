@@ -97,12 +97,11 @@ class OTPService:
         )
 
         # Enregistrer l'OTP en base de données
-        await self.otp_repos.create(otp_model)
+        otp_id = await self.otp_repos.create(otp_model)
         db_otp = await self.otp_repos.find_by_email_and_code(
             email=otp_request.email, code=otp_code
         )
 
-        # Envoie de du code OTP à l'adresse mail
         mail_subject = "Votre Code de Vérification OTP pour SkillMap"
 
         # Formater le temps d'expiration de manière conviviale
@@ -113,12 +112,16 @@ class OTPService:
             expiry_seconds = int(self.otp_expiry_minutes * 60)
             expiry_time_str = f"{expiry_seconds} secondes"
 
+        base_url = self.settings.base_url
+        countdown_image_url = f"{base_url}/otp/countdown-image/{otp_id}"
+
         # Contexte pour le template HTML
         template_context = {
             "user_first_name": user.first_name,
             "otp_code": otp_code,
             "expiry_time_str": expiry_time_str,
             "current_year": datetime.datetime.now().year,
+            "countdown_image_url": countdown_image_url,
         }
 
         html_body = self._load_email_template("otp_verification.html", template_context)

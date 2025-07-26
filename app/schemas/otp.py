@@ -69,7 +69,7 @@ class OTPResponseSchema(BaseModel):
     email: EmailStr = Field(
         ..., description="L'adresse e-mail à laquelle l'OTP est envoyé."
     )
-    code: str = Field(..., description="Le code OTP généré.")
+    # code: str = Field(..., description="Le code OTP généré.")
     expires_at: datetime.datetime = Field(
         ..., description="Date et heure d'expiration de l'OTP."
     )
