@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum
 from typing_extensions import Annotated
-from pydantic import BaseModel, BeforeValidator, EmailStr, Field
+from pydantic import BaseModel, BeforeValidator, ConfigDict, EmailStr, Field
 
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
@@ -37,11 +37,11 @@ class OTPModel(BaseModel):
         default=OTPTypeEnum.VERIFY_USER,
     )
 
-    class Config:
-        # Permet l'affectation par ID et la conversion de/vers ObjectId
-        populate_by_name = True
-        json_encoders = {PyObjectId: str}
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_encoders={PyObjectId: str},
+        arbitrary_types_allowed=True,
+    )
 
     def is_expired(self) -> bool:
         """Vérifie si l'OTP a expiré."""
