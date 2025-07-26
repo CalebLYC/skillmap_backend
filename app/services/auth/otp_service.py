@@ -1,6 +1,8 @@
+import os
 import random
 import datetime
 from fastapi import HTTPException, status
+from app.core.config import Settings
 from app.core.security import SecurityUtils
 from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.user_repository import UserRepository
@@ -13,6 +15,7 @@ from app.schemas.otp import (
     OTPResponseSchema,
 )
 from app.schemas.user import UserReadSchema
+from app.services.email_service import EmailService
 
 
 class OTPService:
@@ -20,18 +23,57 @@ class OTPService:
         self,
         otp_repos: OTPRepository,
         user_repos: UserRepository,
-        otp_expiry_minutes: int = get_settings().otp_expiry_minutes,
-        otp_length: int = get_settings().otp_length,
+        email_service: EmailService,
+        settings: Settings,
     ):
         self.otp_repos = otp_repos
         self.user_repos = user_repos
-        self.otp_expiry_minutes = otp_expiry_minutes
-        self.otp_length = otp_length
+        self.email_service = email_service
+        self.settings = settings
+        self.otp_expiry_minutes = self.settings.otp_expiry_minutes
+        self.otp_length = self.settings.otp_length
+        self.templates_dir = self.settings.templates_dir
+
+    def _load_email_template(self, template_name: str, context: dict) -> str:
+        """Charge un modèle d'e-mail HTML et y injecte des variables.
+
+        Args:
+            template_name (str): _description_
+            context (dict): _description_
+
+        Raises:
+            FileNotFoundError: _description_
+
+        Returns:
+            str: _description_
+        """
+        template_path = os.path.join(self.templates_dir, "emails", template_name)
+        if not os.path.exists(template_path):
+            raise FileNotFoundError(f"Email template not found: {template_path}")
+
+        with open(template_path, "r", encoding="utf-8") as f:
+            template_content = f.read()
+
+        # Simple remplacement de variables pour cet exemple.
+        # Pour des templates plus complexes, Jinja2 ou d'autres moteurs seraient mieux.
+        rendered_html = template_content
+        for key, value in context.items():
+            rendered_html = rendered_html.replace(f"{{{{ {key} }}}}", str(value))
+
+        return rendered_html
 
     async def request_otp(self, otp_request: OTPRequestSchema) -> OTPResponseSchema:
-        """
-        Génère et "envoie" un OTP à l'adresse e-mail spécifiée.
+        """Génère et "envoie" un OTP à l'adresse e-mail spécifiée.
         Vérifie d'abord si l'utilisateur existe.
+
+        Args:
+            otp_request (OTPRequestSchema): _description_
+
+        Raises:
+            HTTPException: _description_
+
+        Returns:
+            OTPResponseSchema: _description_
         """
         user = await self.user_repos.find_by_email(email=otp_request.email)
         if not user:
@@ -60,8 +102,33 @@ class OTPService:
             email=otp_request.email, code=otp_code
         )
 
-        # TODO: Intégrer un service d'envoi d'e-mails/SMS réel ici
-        # Pour l'instant, nous allons juste simuler l'envoi.
+        # Envoie de du code OTP à l'adresse mail
+        mail_subject = "Votre Code de Vérification OTP pour SkillMap"
+
+        # Formater le temps d'expiration de manière conviviale
+        expiry_time_str = f"{self.otp_expiry_minutes} minutes"
+        if self.otp_expiry_minutes == 1:
+            expiry_time_str = "1 minute"
+        elif self.otp_expiry_minutes < 1:
+            expiry_seconds = int(self.otp_expiry_minutes * 60)
+            expiry_time_str = f"{expiry_seconds} secondes"
+
+        # Contexte pour le template HTML
+        template_context = {
+            "user_first_name": user.first_name,
+            "otp_code": otp_code,
+            "expiry_time_str": expiry_time_str,
+            "current_year": datetime.datetime.now().year,
+        }
+
+        html_body = self._load_email_template("otp_verification.html", template_context)
+
+        await self.email_service.send_email(
+            recipient_email=otp_request.email,
+            subject=mail_subject,
+            body=html_body,
+            is_html=True,
+        )
         print(
             f"DEBUG: OTP pour {otp_request.email}: {otp_code} (Expire à: {expires_at})"
         )
@@ -77,8 +144,21 @@ class OTPService:
         otp_verify: OTPVerifySchema,
         otp_type: OTPTypeEnum = OTPTypeEnum.VERIFY_USER,
     ) -> OTPVerifyResponseSchema:
-        """
-        Vérifie un OTP fourni par l'utilisateur.
+        """Vérifie un OTP fourni par l'utilisateur.
+
+        Args:
+            otp_verify (OTPVerifySchema): _description_
+            otp_type (OTPTypeEnum, optional): _description_. Defaults to OTPTypeEnum.VERIFY_USER.
+
+        Raises:
+            HTTPException: _description_
+            HTTPException: _description_
+            HTTPException: _description_
+            HTTPException: _description_
+            HTTPException: _description_
+
+        Returns:
+            OTPVerifyResponseSchema: _description_
         """
         # Vérifier si l'utilisateur existe
         user = await self.user_repos.find_by_email(email=otp_verify.email)

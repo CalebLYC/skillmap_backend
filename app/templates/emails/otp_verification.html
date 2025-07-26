@@ -1,0 +1,99 @@
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre Code de Vérification OTP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .header h1 {
+            color: #333333;
+            font-size: 28px;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .content {
+            padding: 20px 0;
+            text-align: center;
+            color: #555555;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .otp-code {
+            font-size: 38px;
+            font-weight: bold;
+            color: #007bff; /* Bleu primaire */
+            background-color: #e9f5ff; /* Fond bleu clair */
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 25px 0;
+            letter-spacing: 6px; /* Espacement des lettres pour la lisibilité */
+            border: 1px dashed #a0caff; /* Bordure stylisée */
+        }
+        .highlight {
+            font-weight: bold;
+            color: #333333;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            font-size: 12px;
+            color: #888888;
+        }
+        .warning {
+            color: #dc3545; /* Rouge pour les avertissements */
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Code de Vérification SkillMap</h1>
+        </div>
+        <div class="content">
+            <p>Bonjour <span class="highlight">{{ user_first_name }}</span>,</p>
+            <p>Nous avons reçu une demande de code de vérification pour votre compte SkillMap.</p>
+            <p>Voici votre code de vérification à usage unique (OTP) :</p>
+            <div class="otp-code">{{ otp_code }}</div>
+            <p>Ce code est valide pour les <span class="highlight">{{ expiry_time_str }}</span>.</p>
+            <p class="warning">Pour votre sécurité, veuillez ne pas partager ce code avec qui que ce soit.</p>
+            <p>Si vous n'avez pas demandé ce code, veuillez ignorer cet e-mail.</p>
+            <p>Merci de votre confiance.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{ current_year }} SkillMap. Tous droits réservés.</p>
+            <p>Si vous avez des questions, veuillez contacter notre support.</p>
+        </div>
+    </div>
+</body>
+</html>

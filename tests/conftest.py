@@ -10,6 +10,7 @@ from app.providers.providers import get_db
 from app.main import app
 from app.services.auth.permission_service import PermissionService
 from app.services.auth.role_service import RoleService
+from app.services.email_service import EmailService
 from tests.common.fake_db import FakeDB
 
 
@@ -54,6 +55,21 @@ def permission_service(shared_fake_db):
     role_repo = RoleRepository(shared_fake_db)
     permission_repo = PermissionRepository(shared_fake_db)
     return PermissionService(role_repos=role_repo, permission_repos=permission_repo)
+
+
+@pytest_asyncio.fixture(name="mock_email_service")
+async def mock_email_service_fixture(mocker) -> EmailService:
+    """Fournit un mock asynchrone pour EmailService.
+
+    Args:
+        mocker (_type_): _description_
+
+    Returns:
+        EmailService: _description_
+    """
+    mock_service = mocker.AsyncMock(spec=EmailService)
+    mock_service.send_email.return_value = None
+    return mock_service
 
 
 @pytest_asyncio.fixture

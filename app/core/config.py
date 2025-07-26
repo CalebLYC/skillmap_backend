@@ -4,6 +4,15 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    """Base class of all app settings and configuration params
+
+    Args:
+        BaseSettings (_type_): _description_
+
+    Returns:
+        Settings: with all env and config properties
+    """
+
     environment: str = Field(..., alias="ENV")
 
     # fallback généraux
@@ -35,13 +44,18 @@ class Settings(BaseSettings):
     otp_length: int = Field(..., alias="OTP_LENGTH")
 
     # Paramètres d'envoi d'e-mail (SMTP)
-    smtp_host: str = "smtp.example.com"
-    smtp_port: int = 587
-    smtp_username: str = "your_email@example.com"
-    smtp_password: str = "your_email_password"
-    smtp_sender_email: EmailStr = "noreply@example.com"
-    smtp_use_tls: bool = True
-    # smtp_use_ssl: bool = False            # Utiliser SSL (pour le port 465)
+    smtp_host: str = Field(..., alias="SMTP_HOST")
+    smtp_port: int = Field(..., alias="SMTP_PORT")
+    smtp_username: str = Field(..., alias="SMTP_USERNAME")
+    smtp_password: str = Field(..., alias="SMTP_PASSWORD")
+    smtp_sender_email: EmailStr = Field(..., alias="SMTP_SENDER_EMAIL")
+    smtp_use_tls: bool = Field(..., alias="SMTP_USE_TLS")
+    smtp_use_ssl: bool = False  # Utiliser SSL (pour le port 465)
+
+    # Chemin des templates
+    templates_dir: str = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "templates"
+    )
 
     # Paramètre de la base de données en fonction de l'environnement
     @property

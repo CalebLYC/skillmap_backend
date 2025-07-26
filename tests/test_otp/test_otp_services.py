@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
+from app.providers.providers import get_settings
 from app.schemas.user import UserCreateSchema
 from app.services.auth.otp_service import OTPService
 from app.db.repositories.otp_repository import OTPRepository
@@ -18,20 +19,20 @@ from app.schemas.otp import (
 from app.models.OTP import OTPModel
 from app.models.User import UserModel
 from app.services.auth.user_service import UserService
+from app.services.email_service import EmailService
 
 
 # --- Fixtures pour les mocks des dépôts et le service ---
 
 
 @pytest.fixture
-def otp_service(shared_fake_db) -> OTPService:
+def otp_service(shared_fake_db, mock_email_service_fixture: EmailService) -> OTPService:
     """Fournit une instance de OTPService avec les dépôts mockés."""
-    # Vous pouvez ajuster otp_expiry_minutes et otp_length ici si nécessaire pour des tests spécifiques
     return OTPService(
         otp_repos=OTPRepository(shared_fake_db),
         user_repos=UserRepository(shared_fake_db),
-        otp_expiry_minutes=5,
-        otp_length=6,
+        email_service=mock_email_service_fixture,
+        settings=get_settings(),  # Possibilité d'injecter un autre settings spécifique pour les tests
     )
 
 
