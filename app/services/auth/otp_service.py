@@ -5,6 +5,7 @@ from app.core.security import SecurityUtils
 from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.user_repository import UserRepository
 from app.models.OTP import OTPModel, OTPTypeEnum
+from app.providers.providers import get_settings
 from app.schemas.otp import (
     OTPRequestSchema,
     OTPVerifyResponseSchema,
@@ -19,8 +20,8 @@ class OTPService:
         self,
         otp_repos: OTPRepository,
         user_repos: UserRepository,
-        otp_expiry_minutes: int = 5,
-        otp_length: int = 6,
+        otp_expiry_minutes: int = get_settings().otp_expiry_minutes,
+        otp_length: int = get_settings().otp_length,
     ):
         self.otp_repos = otp_repos
         self.user_repos = user_repos
