@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta, timezone
-from unittest.mock import patch
+from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 from httpx import AsyncClient
-from fastapi import HTTPException, status
+from fastapi import status
 
 from app.services.auth.otp_service import OTPService
 

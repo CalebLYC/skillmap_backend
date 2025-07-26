@@ -1,7 +1,8 @@
+from httpx import AsyncClient
 import pytest
 
 
-async def create_permission(async_client):
+async def create_permission(async_client: AsyncClient):
     payload = {"code": "users:read", "description": "Permission to read users"}
     response = await async_client.post("/permissions/", json=payload)
     assert response.status_code == 201
@@ -12,7 +13,7 @@ async def create_permission(async_client):
 
 
 @pytest.mark.asyncio
-async def test_create_role(bypass_role_and_permission_async_client):
+async def test_create_role(bypass_role_and_permission_async_client: AsyncClient):
     await create_permission(bypass_role_and_permission_async_client)
     payload = {"name": "user", "permissions": ["users:read"]}
     response = await bypass_role_and_permission_async_client.post(
@@ -24,7 +25,7 @@ async def test_create_role(bypass_role_and_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_list_roles(bypass_permission_async_client):
+async def test_list_roles(bypass_permission_async_client: AsyncClient):
     # First create a permission to test retrieval
     payload = {"name": "user"}
     await bypass_permission_async_client.post("/roles/", json=payload)
@@ -37,7 +38,7 @@ async def test_list_roles(bypass_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_get_role(bypass_permission_async_client):
+async def test_get_role(bypass_permission_async_client: AsyncClient):
     # First create a permission to test retrieval
     payload = {"name": "user"}
     create_response = await bypass_permission_async_client.post("/roles/", json=payload)
@@ -51,7 +52,7 @@ async def test_get_role(bypass_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_update_role(bypass_role_and_permission_async_client):
+async def test_update_role(bypass_role_and_permission_async_client: AsyncClient):
     await create_permission(bypass_role_and_permission_async_client)
 
     # First create a permission to test update
@@ -72,7 +73,7 @@ async def test_update_role(bypass_role_and_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_delete_role(bypass_permission_async_client):
+async def test_delete_role(bypass_permission_async_client: AsyncClient):
     # First create a permission to test deletion
     payload = {"name": "user"}
     create_response = await bypass_permission_async_client.post("/roles/", json=payload)
@@ -92,7 +93,7 @@ async def test_delete_role(bypass_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_delete_all_roles(bypass_permission_async_client):
+async def test_delete_all_roles(bypass_permission_async_client: AsyncClient):
     # First create a permission to test deletion
     payload = {"name": "user"}
     await bypass_permission_async_client.post("/roles/", json=payload)
@@ -108,7 +109,9 @@ async def test_delete_all_roles(bypass_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_add_permissions_to_role(bypass_role_and_permission_async_client):
+async def test_add_permissions_to_role(
+    bypass_role_and_permission_async_client: AsyncClient,
+):
     await create_permission(bypass_role_and_permission_async_client)
 
     # First create a role to test adding permissions
@@ -139,7 +142,9 @@ async def test_add_permissions_to_role(bypass_role_and_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_remove_permissions_from_role(bypass_role_and_permission_async_client):
+async def test_remove_permissions_from_role(
+    bypass_role_and_permission_async_client: AsyncClient,
+):
     await create_permission(bypass_role_and_permission_async_client)
 
     # First create a role to test removing permissions
@@ -170,7 +175,9 @@ async def test_remove_permissions_from_role(bypass_role_and_permission_async_cli
 
 
 @pytest.mark.asyncio
-async def test_add__remove_inherited_role(bypass_role_and_permission_async_client):
+async def test_add__remove_inherited_role(
+    bypass_role_and_permission_async_client: AsyncClient,
+):
     await create_permission(bypass_role_and_permission_async_client)
 
     # First create a role to test adding inherited roles
@@ -212,7 +219,7 @@ async def test_add__remove_inherited_role(bypass_role_and_permission_async_clien
 
 @pytest.mark.asyncio
 async def test_inherited_role_circular_dependency(
-    bypass_role_and_permission_async_client,
+    bypass_role_and_permission_async_client: AsyncClient,
 ):
     await create_permission(bypass_role_and_permission_async_client)
 
@@ -250,7 +257,7 @@ async def test_inherited_role_circular_dependency(
 
 
 @pytest.mark.asyncio
-async def test_role_permission_not_exist(bypass_permission_async_client):
+async def test_role_permission_not_exist(bypass_permission_async_client: AsyncClient):
     # Attempt to add a non-existent permission to a role
     payload = {"name": "user"}
     create_response = await bypass_permission_async_client.post("/roles/", json=payload)
@@ -270,7 +277,7 @@ async def test_role_permission_not_exist(bypass_permission_async_client):
 
 
 @pytest.mark.asyncio
-async def test_role_not_exist(bypass_permission_async_client):
+async def test_role_not_exist(bypass_permission_async_client: AsyncClient):
     # Attempt to get a non-existent role
     response = await bypass_permission_async_client.get("/roles/999999")
     assert response.status_code == 422

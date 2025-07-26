@@ -1,8 +1,9 @@
+from httpx import AsyncClient
 import pytest
 
 
 @pytest.mark.asyncio
-async def test_create_permission(bypass_role_async_client):
+async def test_create_permission(bypass_role_async_client: AsyncClient):
     payload = {"code": "users:read", "description": "Permission to read users"}
     response = await bypass_role_async_client.post("/permissions/", json=payload)
     assert response.status_code == 201
@@ -11,7 +12,7 @@ async def test_create_permission(bypass_role_async_client):
 
 
 @pytest.mark.asyncio
-async def test_list_permissions(bypass_role_async_client):
+async def test_list_permissions(bypass_role_async_client: AsyncClient):
     # First create a permission to test retrieval
     payload = {"code": "users:read", "description": "Permission to read users"}
     await bypass_role_async_client.post("/permissions/", json=payload)
@@ -24,7 +25,7 @@ async def test_list_permissions(bypass_role_async_client):
 
 
 @pytest.mark.asyncio
-async def test_get_permission(bypass_role_async_client):
+async def test_get_permission(bypass_role_async_client: AsyncClient):
     # First create a permission to test retrieval
     payload = {"code": "users:read", "description": "Permission to read users"}
     create_response = await bypass_role_async_client.post("/permissions/", json=payload)
@@ -38,7 +39,7 @@ async def test_get_permission(bypass_role_async_client):
 
 
 @pytest.mark.asyncio
-async def test_update_permission(bypass_role_async_client):
+async def test_update_permission(bypass_role_async_client: AsyncClient):
     # First create a permission to test update
     payload = {"code": "users:read", "description": "Permission to read users"}
     create_response = await bypass_role_async_client.post("/permissions/", json=payload)
@@ -55,7 +56,7 @@ async def test_update_permission(bypass_role_async_client):
 
 
 @pytest.mark.asyncio
-async def test_delete_permission(bypass_role_async_client):
+async def test_delete_permission(bypass_role_async_client: AsyncClient):
     # First create a permission to test deletion
     payload = {"code": "users:read", "description": "Permission to read users"}
     create_response = await bypass_role_async_client.post("/permissions/", json=payload)
@@ -75,7 +76,7 @@ async def test_delete_permission(bypass_role_async_client):
 
 
 @pytest.mark.asyncio
-async def test_delete_all_permissions(bypass_role_async_client):
+async def test_delete_all_permissions(bypass_role_async_client: AsyncClient):
     # First create a permission to test deletion
     payload = {"code": "users:read", "description": "Permission to read users"}
     await bypass_role_async_client.post("/permissions/", json=payload)

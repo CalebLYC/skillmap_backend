@@ -1,6 +1,7 @@
 from httpx import ASGITransport, AsyncClient
 import pytest
 import pytest_asyncio
+from app.core.security import SecurityUtils
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
 from app.models.User import UserModel
@@ -66,7 +67,7 @@ async def async_client(shared_fake_db):
 
 
 @pytest_asyncio.fixture
-async def auth_async_client(async_client):
+async def auth_async_client(async_client: AsyncClient):
     app.dependency_overrides[auth_middleware] = lambda: UserModel(
         id="test_user_id",
         email="test@example.com",
@@ -80,15 +81,15 @@ async def auth_async_client(async_client):
 
 
 @pytest_asyncio.fixture
-async def very_auth_async_client(async_client):
+async def very_auth_async_client(async_client: AsyncClient):
     payload = {
         "email": "test@example.com",
         "first_name": "User",
         "last_name": "Test",
-        "password": "testpasswordencrypted",
+        "password": "testpasswordunencrypted",
         "roles": ["user"],
     }
-    response = await async_client.post("register", json=payload)
+    response = await async_client.post("/register", json=payload)
     assert response.status_code == 201
     user_data = response.json()["user"]
     user = UserModel(
@@ -100,7 +101,7 @@ async def very_auth_async_client(async_client):
         created_at=user_data["created_at"],
         birthday_date=user_data["birthday_date"],
         phone_number=user_data["phone_number"],
-        password="fake_encrypted_password",  # Simulate encrypted password
+        password=SecurityUtils.hash_password("testpasswordunencrypted"),
     )
 
     app.dependency_overrides[auth_middleware] = lambda: user
@@ -109,7 +110,7 @@ async def very_auth_async_client(async_client):
 
 
 @pytest_asyncio.fixture
-async def bypass_role_async_client(auth_async_client, monkeypatch):
+async def bypass_role_async_client(auth_async_client: AsyncClient, monkeypatch):
     # Patch require_role et ensure_role pour bypasser toutes vérifications de rôle
     from app.providers import auth_provider
     from app.services.auth.role_service import RoleService
@@ -125,7 +126,7 @@ async def bypass_role_async_client(auth_async_client, monkeypatch):
 
 
 @pytest_asyncio.fixture
-async def bypass_permission_async_client(auth_async_client, monkeypatch):
+async def bypass_permission_async_client(auth_async_client: AsyncClient, monkeypatch):
     # Patch require_permission pour bypasser toutes vérifications de permission
     from app.providers import auth_provider
     from app.services.auth.permission_service import PermissionService
@@ -143,7 +144,9 @@ async def bypass_permission_async_client(auth_async_client, monkeypatch):
 
 
 @pytest_asyncio.fixture
-async def bypass_role_and_permission_async_client(auth_async_client, monkeypatch):
+async def bypass_role_and_permission_async_client(
+    auth_async_client: AsyncClient, monkeypatch
+):
     # Patch require_role, require_permission, ensure_role, ensure_permission
     from app.providers import auth_provider
     from app.services.auth.role_service import RoleService

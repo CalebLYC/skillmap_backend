@@ -1,8 +1,9 @@
+from httpx import AsyncClient
 import pytest
 
 
 @pytest.mark.asyncio
-async def test_create_user(async_client):
+async def test_create_user(async_client: AsyncClient):
     payload = {
         "first_name": "Alice",
         "last_name": "Borderland",
@@ -17,15 +18,15 @@ async def test_create_user(async_client):
     assert data["email"] == "alice@example.com"
 
 
-"""@pytest.mark.asyncio
-async def test_get_curent_user(authenticated_client):
-    response = await authenticated_client.get(f"/users/current")
+@pytest.mark.asyncio
+async def test_get_curent_user(auth_async_client: AsyncClient):
+    response = await auth_async_client.get(f"/users/current")
     assert response.status_code == 200
-    assert response.json()["email"] == "test@example.com""" ""
+    assert response.json()["email"] == "test@example.com"
 
 
-"""@pytest.mark.asyncio
-async def test_get_all_users(admin_client):
+@pytest.mark.asyncio
+async def test_get_all_users(bypass_role_and_permission_async_client: AsyncClient):
     payload = {
         "first_name": "AlicBobe",
         "last_name": "Builder",
@@ -33,18 +34,17 @@ async def test_get_all_users(admin_client):
         "password": "secret123",
         "phone_number": "90000000",
     }
-    await admin_client.post("/users/", json=payload)
-    response = await admin_client.get(f"/users/")
+    await bypass_role_and_permission_async_client.post("/users/", json=payload)
+    response = await bypass_role_and_permission_async_client.get(f"/users/")
     json = response.json()
     assert response.status_code == 200
     assert isinstance(json, list)
     assert len(json) > 0
-    assert json[0]["email"] == "bob@example.com
-""" """"""
+    assert json[0]["email"] == "bob@example.com"
 
 
 @pytest.mark.asyncio
-async def test_get_user(async_client):
+async def test_get_user(async_client: AsyncClient):
     payload = {
         "first_name": "AlicBobe",
         "last_name": "Builder",
@@ -61,21 +61,21 @@ async def test_get_user(async_client):
 
 
 @pytest.mark.asyncio
-async def test_get_current_user(auth_async_client):
+async def test_get_current_user(auth_async_client: AsyncClient):
     response = await auth_async_client.get(f"/users/current")
     assert response.status_code == 200
     assert response.json()["email"] == "test@example.com"
 
 
 @pytest.mark.asyncio
-async def test_get_current_user_without_authentication(async_client):
+async def test_get_current_user_without_authentication(async_client: AsyncClient):
     response = await async_client.get(f"/users/current")
     assert response.status_code == 401
     assert response.json()["detail"] == "Not authenticated"
 
 
 @pytest.mark.asyncio
-async def test_update_user(async_client):
+async def test_update_user(async_client: AsyncClient):
     payload = {
         "first_name": "Charles",
         "last_name": "Chocolate",
@@ -93,7 +93,7 @@ async def test_update_user(async_client):
 
 
 @pytest.mark.asyncio
-async def test_delete_user(async_client):
+async def test_delete_user(async_client: AsyncClient):
     payload = {
         "first_name": "Dave",
         "last_name": "Davido",
