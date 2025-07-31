@@ -31,6 +31,10 @@ class UserModel(BaseModel):
     permissions: List[str] = Field(default=[])
     is_active: bool = Field(default=True)
     is_verified: bool = Field(default=False)
+    picture: Optional[str] = Field(default=None)
+    social_login__id: Optional[str] = Field(default=None)
+    social_login_provider: Optional[str] = Field(default=None)
+    locale: Optional[str] = Field(default=None)
     birthday_date: Optional[datetime.datetime] = Field(default=None)
     created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
@@ -55,6 +59,10 @@ class UserModel(BaseModel):
                 "is_active": True,
                 "is_verified": True,
                 "created_at": "20025-01-01",
+                "picture": "https://example.com/picture.jpg",
+                "social_login__id": "google_id_12345",
+                "social_login_provider": "google",
+                "locale": "en-US",
             }
         },
     )

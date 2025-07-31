@@ -16,6 +16,10 @@ class UserCreateSchema(BaseModel):
     birthday_date: Optional[datetime.datetime] = Field(default=None)
     roles: Optional[List[str]] = Field(default=[])
     permissions: Optional[List[str]] = Field(default=[])
+    picture: Optional[str] = Field(default=None)
+    social_login__id: Optional[str] = Field(default=None)
+    social_login_provider: Optional[str] = Field(default=None)
+    locale: Optional[str] = Field(default=None)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -33,6 +37,10 @@ class UserCreateSchema(BaseModel):
                 "birthday_date": "2004-01-01",
                 "roles": ["user"],
                 "permissions": ["user:read"],
+                "picture": "https://example.com/picture.jpg",
+                "social_login__id": "google_id_12345",
+                "social_login_provider": "google",
+                "locale": "en-US",
             }
         },
     )
@@ -50,6 +58,10 @@ class UserUpdateSchema(BaseModel):
     is_verified: Optional[bool] = Field(default=None)
     roles: Optional[List[str]] = Field(default=None)
     permissions: Optional[List[str]] = Field(default=None)
+    picture: Optional[str] = Field(default=None)
+    # social_login__id: Optional[str] = Field(default=None)
+    # social_login_provider: Optional[str] = Field(default=None)
+    locale: Optional[str] = Field(default=None)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -66,6 +78,10 @@ class UserUpdateSchema(BaseModel):
                 "permissions": ["user:read"],
                 "is_active": True,
                 "is_verified": True,
+                "picture": "https://example.com/picture.jpg",
+                # "social_login__id": "google_id_12345",
+                # "social_login_provider": "google",
+                "locale": "en-US",
             }
         },
     )
@@ -84,6 +100,10 @@ class UserReadSchema(BaseModel):
     permissions: List[str] = Field(default=[])
     is_active: bool = Field(default=True)
     is_verified: bool = Field(default=False)
+    picture: Optional[str] = Field(default=None)
+    social_login__id: Optional[str] = Field(default=None)
+    social_login_provider: Optional[str] = Field(default=None)
+    locale: Optional[str] = Field(default=None)
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -106,6 +126,10 @@ class UserReadSchema(BaseModel):
                 "created_at": "20025-01-01",
                 "is_active": True,
                 "is_verified": True,
+                "picture": "https://example.com/picture.jpg",
+                "social_login__id": "google_id_12345",
+                "social_login_provider": "google",
+                "locale": "en-US",
             }
         },
     )

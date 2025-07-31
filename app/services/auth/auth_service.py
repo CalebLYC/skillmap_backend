@@ -58,6 +58,32 @@ class AuthService:
         )
         return await self.access_token_repos.create(access_token=token_doc)
 
+    async def revoke_access_token(self, token: str) -> bool:
+        """
+        Révoque un jeton d'accès en le marquant comme révoqué.
+        """
+        token_doc = await self.access_token_repos.find_by_token(token=token)
+        if not token_doc:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Token not found"
+            )
+        if token_doc.revoked:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Token already revoked"
+            )
+        return await self.access_token_repos.revoke(id=token_doc.id)
+
+    async def generate_and_get_access_token(
+        self, user_id: str, expires_in_minutes: int | None = None
+    ) -> AccessTokenModel:
+        """
+        Génère un jeton d'accès pour l'utilisateur spécifié.
+        """
+        token_id = await self.generate_access_token(
+            user_id=user_id, expires_in_minutes=expires_in_minutes
+        )
+        return await self.access_token_repos.find_by_id(id=token_id)
+
     async def login(self, user: LoginRequestSchema) -> LoginResponseSchema:
         db_user = await self.user_repos.find_by_email(email=user.email)
         if not db_user:
@@ -288,6 +314,15 @@ class AuthService:
         access_token = await self.access_token_repos.find_by_id(id=token_id)
         return_user = UserReadSchema.model_validate(updated)
         return LoginResponseSchema(access_token=access_token, user=return_user)
+
+    def generate_random_password(self, length: int = 12) -> str:
+        """
+        Génère un mot de passe aléatoire.
+        """
+        return SecurityUtils.generate_random_password(length=length)
+
+    """async def clean_expired_tokens(self):
+        await self.access_token_repos.delete_expired_tokens()"""
 
     """async def clean_expired_tokens():
         await mongo_db["access_tokens"].delete_many({"expires_at": {"$lt": datetime.utcnow()}})"""

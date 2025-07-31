@@ -14,6 +14,7 @@ from app.providers.repository_provider import (
     get_user_repository,
 )
 from app.services.auth.auth_service import AuthService
+from app.services.auth.google_auth_service import GoogleAuthService
 from app.services.auth.otp_service import OTPService
 from app.services.auth.permission_service import PermissionService
 from app.services.auth.role_service import RoleService
@@ -33,6 +34,18 @@ def get_email_service(
         EmailService: _description_
     """
     return EmailService(settings=settings)
+
+
+def get_google_auth_service(
+    settings: Settings = Depends(get_settings),
+) -> GoogleAuthService:
+    """Provides Google Auth service
+    Args:
+        settings (Settings, optional): _description_. Defaults to Depends(get_settings).
+    Returns:
+        GoogleAuthService: _description_
+    """
+    return GoogleAuthService(settings=settings)
 
 
 def get_auth_service(

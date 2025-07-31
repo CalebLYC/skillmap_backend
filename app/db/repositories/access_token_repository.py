@@ -70,3 +70,15 @@ class AccessTokenRepository:
     async def delete_all(self) -> bool:
         deleted_count = await self._db_ops.delete_many({})
         return deleted_count > 0
+
+    async def revoke_token(self, token: str) -> bool:
+        updated_count = await self._db_ops.update_one(
+            {"token": token}, {"$set": {"revoked": True}}
+        )
+        return updated_count > 0
+
+    async def revoke(self, id: str) -> bool:
+        updated_count = await self._db_ops.update_one(
+            {"_id": ObjectId(id)}, {"$set": {"revoked": True}}
+        )
+        return updated_count > 0

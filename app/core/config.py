@@ -50,6 +50,12 @@ class Settings(BaseSettings):
     google_oauth_client_secret: str = Field(..., alias="GOOGLE_OAUTH_CLIENT_SECRET")
     google_oauth_redirect_uri: str = Field(..., alias="GOOGLE_OAUTH_REDIRECT_URI")
 
+    # URL du frontend à utiliser pour les redirections
+    web_frontend_url: str = Field(..., alias="WEB_FRONTEND_URL")
+    frontend_auth_success_redirect_uri: str = Field(
+        ..., alias="AUTH_SUCCESS_REDIRECT_URI"
+    )
+
     # Chemin des templates
     templates_dir: str = os.path.join(
         os.path.dirname(os.path.dirname(__file__)), "templates"

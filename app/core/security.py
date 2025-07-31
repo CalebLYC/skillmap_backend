@@ -1,3 +1,5 @@
+import random
+import string
 from passlib.context import CryptContext
 
 
@@ -26,3 +28,10 @@ class SecurityUtils:
         if SecurityUtils._pwd_context is None:
             SecurityUtils()
         return SecurityUtils._pwd_context.verify(plain, hashed)
+
+    def generate_random_password(length: int = 12) -> str:
+        """
+        Génère un mot de passe aléatoire.
+        """
+        characters = string.ascii_letters + string.digits + string.punctuation
+        return "".join(random.choice(characters) for _ in range(length))

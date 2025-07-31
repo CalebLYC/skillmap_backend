@@ -113,6 +113,20 @@ class UserService:
         updated = await self.user_repo.find_by_id(user_id)
         return UserReadSchema.model_validate(updated)
 
+    async def verify_user(self, user_id: str) -> UserReadSchema:
+        user = await self.user_repo.find_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        update_data = {"is_verified": True, "is_active": True}
+
+        success = await self.user_repo.update(user_id, update_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="User verification failed")
+
+        updated = await self.user_repo.find_by_id(user_id)
+        return UserReadSchema.model_validate(updated)
+
     async def delete_user(self, user_id: str) -> None:
         user = await self.user_repo.find_by_id(user_id)
         if not user:
