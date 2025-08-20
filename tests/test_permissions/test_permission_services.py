@@ -2,12 +2,12 @@ import pytest
 
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
-from app.schemas.role import (
+from app.schemas.role_schema import (
     PermissionCreateSchema,
     PermissionUpdateSchema,
     RoleCreateSchema,
 )
-from app.schemas.user import UserReadSchema
+from app.schemas.user_schema import UserReadSchema
 from app.services.auth.permission_service import PermissionService
 
 

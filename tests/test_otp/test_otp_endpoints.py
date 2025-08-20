@@ -1,13 +1,6 @@
-from datetime import timedelta
-import datetime
-from freezegun import freeze_time
 import pytest
 from httpx import AsyncClient
 from fastapi import status
-
-from app.db.repositories.otp_repository import OTPRepository
-from app.models.OTP import OTPModel
-from app.services.auth.otp_service import OTPService
 
 
 @pytest.mark.asyncio

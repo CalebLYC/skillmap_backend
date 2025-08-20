@@ -2,8 +2,8 @@ import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import Optional
 
-from app.models.OTP import OTPTypeEnum
-from app.schemas.user import UserReadSchema
+from app.models.otp import OTPTypeEnum
+from app.schemas.user_schema import UserReadSchema
 
 
 class OTPRequestSchema(BaseModel):

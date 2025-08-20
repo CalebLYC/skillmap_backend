@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Path, Response, status
 from app.db.repositories.otp_repository import OTPRepository
 from app.providers.repository_provider import get_otp_repository
 from app.providers.service_provider import get_otp_service
-from app.schemas.otp import (
+from app.schemas.otp_schema import (
     OTPRequestSchema,
     OTPVerifyResponseSchema,
     OTPVerifySchema,

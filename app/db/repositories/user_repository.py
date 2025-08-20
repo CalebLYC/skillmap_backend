@@ -2,7 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, List
 from bson import ObjectId
 from app.db.mongo_collections import DBCollections
-from app.models.User import UserModel
+from app.models.user import UserModel
 from app.utils.db_utils.mongo_utils import MongoCollectionOperations
 
 

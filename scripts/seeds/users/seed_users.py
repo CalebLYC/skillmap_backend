@@ -6,7 +6,7 @@ from app.core.config import Settings
 from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
 from app.db.repositories.permission_repository import PermissionRepository
-from app.schemas.user import UserCreateSchema
+from app.schemas.user_schema import UserCreateSchema
 from app.db.repositories.user_repository import UserRepository
 from app.db.repositories.role_repository import RoleRepository
 from app.services.auth.user_service import UserService

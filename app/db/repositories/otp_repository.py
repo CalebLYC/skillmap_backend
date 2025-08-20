@@ -4,7 +4,7 @@ from typing import List, Optional
 from bson import ObjectId
 from app.db.mongo_collections import DBCollections
 
-from app.models.OTP import OTPModel
+from app.models.otp import OTPModel
 from app.utils.db_utils.mongo_utils import MongoCollectionOperations
 
 

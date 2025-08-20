@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Depends, Path, status
 
 from app.providers.auth_provider import require_permission
 from app.providers.service_provider import get_role_service
-from app.schemas.role import (
+from app.schemas.role_schema import (
     AssignPermissionSchema,
     RoleReadSchema,
     RoleUpdateSchema,

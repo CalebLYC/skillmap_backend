@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.providers.auth_provider import auth_middleware
 from app.providers.service_provider import get_auth_service
-from app.models.User import UserModel
+from app.models.user import UserModel
 from app.schemas.auth_schema import (
     ChangeUserPasswordSchema,
     LoginRequestSchema,
@@ -10,7 +10,7 @@ from app.schemas.auth_schema import (
     RegisterSchema,
     ResetUserPasswordSchema,
 )
-from app.schemas.user import UserReadSchema, UserUpdateSchema
+from app.schemas.user_schema import UserReadSchema, UserUpdateSchema
 from app.services.auth.auth_service import AuthService
 from app.utils.constants import http_status
 

@@ -1,25 +1,17 @@
 import pytest
-from datetime import datetime, timedelta
 from fastapi import HTTPException, status
-from unittest.mock import AsyncMock
 
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
-from app.providers.providers import get_settings
-from app.schemas.user import UserCreateSchema
+from app.schemas.user_schema import UserCreateSchema
 from app.services.auth.otp_service import OTPService
-from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.user_repository import UserRepository
-from app.schemas.otp import (
+from app.schemas.otp_schema import (
     OTPRequestSchema,
-    OTPVerifyResponseSchema,
     OTPVerifySchema,
     OTPResponseSchema,
 )
-from app.models.OTP import OTPModel
-from app.models.User import UserModel
 from app.services.auth.user_service import UserService
-from app.services.email_service import EmailService
 
 
 # --- Fixtures pour les mocks des dépôts et le service ---

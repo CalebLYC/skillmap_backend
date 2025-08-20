@@ -5,7 +5,6 @@ from fastapi.params import Depends, Query
 from fastapi.responses import RedirectResponse
 
 from app.core.config import Settings
-from app.models.AccessToken import AccessTokenModel
 from app.providers.providers import get_settings
 from app.providers.service_provider import (
     get_auth_service,
@@ -13,7 +12,7 @@ from app.providers.service_provider import (
     get_user_service,
 )
 from app.schemas.auth_schema import LoginResponseSchema
-from app.schemas.user import UserCreateSchema, UserUpdateSchema
+from app.schemas.user_schema import UserCreateSchema, UserUpdateSchema
 from app.services.auth.auth_service import AuthService
 from app.services.auth.google_auth_service import GoogleAuthService
 from app.services.auth.user_service import UserService

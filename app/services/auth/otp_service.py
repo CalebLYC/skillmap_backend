@@ -3,18 +3,16 @@ import random
 import datetime
 from fastapi import HTTPException, status
 from app.core.config import Settings
-from app.core.security import SecurityUtils
 from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.user_repository import UserRepository
-from app.models.OTP import OTPModel, OTPTypeEnum
-from app.providers.providers import get_settings
-from app.schemas.otp import (
+from app.models.otp import OTPModel, OTPTypeEnum
+from app.schemas.otp_schema import (
     OTPRequestSchema,
     OTPVerifyResponseSchema,
     OTPVerifySchema,
     OTPResponseSchema,
 )
-from app.schemas.user import UserReadSchema
+from app.schemas.user_schema import UserReadSchema
 from app.services.email_service import EmailService
 
 

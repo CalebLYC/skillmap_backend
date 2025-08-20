@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.db.mongo_collections import DBCollections
-from app.models.Role import RoleModel
+from app.models.role import RoleModel
 from app.utils.db_utils.mongo_utils import MongoCollectionOperations
 
 

@@ -8,8 +8,8 @@ from app.core.security import SecurityUtils
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.user_repository import UserRepository
-from app.models.AccessToken import AccessTokenModel
-from app.models.OTP import OTPModel, OTPTypeEnum
+from app.models.access_token import AccessTokenModel
+from app.models.otp import OTPModel, OTPTypeEnum
 from app.schemas.auth_schema import (
     ChangeUserPasswordSchema,
     LoginRequestSchema,
@@ -17,9 +17,13 @@ from app.schemas.auth_schema import (
     RegisterSchema,
     ResetUserPasswordSchema,
 )
-from app.models.User import UserModel
-from app.schemas.otp import OTPResponseSchema, OTPVerifyResponseSchema, OTPVerifySchema
-from app.schemas.user import UserReadSchema, UserUpdateSchema
+from app.models.user import UserModel
+from app.schemas.otp_schema import (
+    OTPResponseSchema,
+    OTPVerifyResponseSchema,
+    OTPVerifySchema,
+)
+from app.schemas.user_schema import UserReadSchema, UserUpdateSchema
 
 
 class AuthService:

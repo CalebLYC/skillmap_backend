@@ -10,8 +10,8 @@ from app.providers.repository_provider import (
 from app.providers.service_provider import get_permission_service, get_role_service
 from app.db.repositories.access_token_repository import AccessTokenRepository
 from app.db.repositories.user_repository import UserRepository
-from app.models.User import UserModel
-from app.schemas.user import UserReadSchema
+from app.models.user import UserModel
+from app.schemas.user_schema import UserReadSchema
 from app.services.auth.permission_service import PermissionService
 from app.services.auth.role_service import RoleService
 

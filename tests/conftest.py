@@ -8,7 +8,7 @@ from app.db.repositories.otp_repository import OTPRepository
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
 from app.db.repositories.user_repository import UserRepository
-from app.models.User import UserModel
+from app.models.user import UserModel
 from app.providers.auth_provider import auth_middleware
 from app.providers.providers import get_db, get_settings
 from app.main import app

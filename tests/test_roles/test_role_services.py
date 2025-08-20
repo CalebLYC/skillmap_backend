@@ -1,7 +1,11 @@
 import pytest
 
-from app.schemas.role import PermissionCreateSchema, RoleCreateSchema, RoleUpdateSchema
-from app.schemas.user import UserReadSchema
+from app.schemas.role_schema import (
+    PermissionCreateSchema,
+    RoleCreateSchema,
+    RoleUpdateSchema,
+)
+from app.schemas.user_schema import UserReadSchema
 
 
 async def create_permission(permission_service, code, description):

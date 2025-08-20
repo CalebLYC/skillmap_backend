@@ -2,12 +2,12 @@ from typing import List
 from fastapi import HTTPException
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
-from app.schemas.role import (
+from app.schemas.role_schema import (
     PermissionCreateSchema,
     PermissionReadSchema,
     PermissionUpdateSchema,
 )
-from app.schemas.user import UserReadSchema
+from app.schemas.user_schema import UserReadSchema
 
 
 class PermissionService:

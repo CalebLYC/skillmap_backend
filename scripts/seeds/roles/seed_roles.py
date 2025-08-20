@@ -2,7 +2,7 @@ import asyncio
 from app.core.config import Settings
 from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
-from app.schemas.role import RoleCreateSchema
+from app.schemas.role_schema import RoleCreateSchema
 from app.db.repositories.role_repository import RoleRepository
 from app.db.repositories.permission_repository import PermissionRepository
 from app.services.auth.role_service import RoleService

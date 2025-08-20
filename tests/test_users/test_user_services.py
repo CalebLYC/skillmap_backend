@@ -1,7 +1,7 @@
 import pytest
 from app.db.repositories.permission_repository import PermissionRepository
 from app.db.repositories.role_repository import RoleRepository
-from app.schemas.user import UserCreateSchema, UserReadSchema, UserUpdateSchema
+from app.schemas.user_schema import UserCreateSchema, UserReadSchema, UserUpdateSchema
 from app.db.repositories.user_repository import UserRepository
 from app.services.auth.user_service import UserService
 from tests.common.fake_db import FakeDB
