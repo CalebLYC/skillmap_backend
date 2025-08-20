@@ -1,4 +1,6 @@
 import asyncio
+
+from dotenv import load_dotenv
 from app.core.config import Settings
 from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
@@ -12,6 +14,7 @@ async def seed_permissions():
     Seeds the database with base permissions.
     Cleans the existing permissions collection before seeding.
     """
+    load_dotenv()
     settings = Settings()
     # client = None
     client = MongoClient(settings.database_uri, settings.database_name)

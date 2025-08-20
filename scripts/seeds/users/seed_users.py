@@ -1,4 +1,5 @@
 import asyncio
+from dotenv import load_dotenv
 from faker import Faker
 import random
 import sys
@@ -26,6 +27,7 @@ async def seed_users(num_fake_users: int = 0, clean_db: bool = True):
         clean_db (bool): If True, clears the existing users collection before seeding.
                          Defaults to True.
     """
+    load_dotenv()
     settings = Settings()
     # client = None
     client = MongoClient(settings.database_uri, settings.database_name)
