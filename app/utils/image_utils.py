@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from typing import Tuple
 
 
 def generate_countdown_image(
