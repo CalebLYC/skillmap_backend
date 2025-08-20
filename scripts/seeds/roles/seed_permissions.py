@@ -3,7 +3,7 @@ from app.core.config import Settings
 from app.db.mongo_client import MongoClient
 from app.db.mongo_collections import DBCollections
 from app.db.repositories.permission_repository import PermissionRepository
-from app.models.Role import PermissionModel
+from app.models.role import PermissionModel
 from scripts.seeds.roles.base_permissions_data import BASE_PERMISSIONS_SEED
 
 
